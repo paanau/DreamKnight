@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterControl : MonoBehaviour
 {
     private GameObject gameController;
-    private Animator myWalkingAnimator;
+    private Animator myAnimator;
     private GameController main;
     private float range, attackCooldown;
     private bool inCombat, isAlive, waiting, myTurn;
@@ -31,8 +31,8 @@ public class CharacterControl : MonoBehaviour
             attackCooldown = 0.6f;
             directionModifier = 1;
         }
-        myWalkingAnimator = GetComponent<Animator>();
-        myWalkingAnimator.speed = 0;
+        myAnimator = GetComponent<Animator>();
+        myAnimator.speed = 1;
     }
 
     // Update is called once per frame
@@ -51,8 +51,14 @@ public class CharacterControl : MonoBehaviour
                 {
                     inCombat = true;
                     main.InitiateCombat(gameObject, hit.collider.gameObject);
+                    myAnimator.SetTrigger("enterCombat");
+                    myAnimator.speed = 1;
                 }
             }
+        }
+        if (!myTurn && isAlive)
+        {
+            myAnimator.speed = 1;
         }
     }
 
@@ -90,15 +96,21 @@ public class CharacterControl : MonoBehaviour
 
     public void WonCombat()
     {
-        inCombat = false;
+        EndCombat();
     }
 
     public void LostCombat()
     {
-        inCombat = false;
+        EndCombat();
         GetComponent<BoxCollider2D>().enabled = false;
         transform.position = new Vector2(transform.position.x, 0);
         isAlive = false;
+    }
+
+    private void EndCombat()
+    {
+        inCombat = false;
+        myAnimator.SetTrigger("leaveCombat");
     }
 
     public float GetCooldown()
@@ -139,12 +151,14 @@ public class CharacterControl : MonoBehaviour
     public void SetMyTurn(bool value)
     {
         myTurn = value;
+        myAnimator.SetTrigger("idle");
     }
 
     public void AdvanceMe(float modifiers)
     {
+        myAnimator.SetTrigger("move");
         transform.Translate(0.1f * modifiers * mySpeed * directionModifier, 0, 0);
-        myWalkingAnimator.speed = modifiers * mySpeed;
+        myAnimator.speed = modifiers * mySpeed + 1;
     }
 
     public bool CanAdvance()
@@ -167,6 +181,6 @@ public class CharacterControl : MonoBehaviour
 
     public void StopWalking()
     {
-        myWalkingAnimator.speed = 0;
+        myAnimator.speed = 0;
     }
 }

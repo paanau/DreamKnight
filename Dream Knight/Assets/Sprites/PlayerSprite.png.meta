@@ -1,0 +1,256 @@
+fileFormatVersion: 2
+guid: 70705bfab26d36147914203e64b4c984
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8868272330977153355
+    second: PlayerBody
+  - first:
+      213: 6349069617109316163
+    second: PlayerWeapon
+  - first:
+      213: 1569261468809307932
+    second: PlayerLegOne
+  - first:
+      213: 8916896056068427944
+    second: PlayerLegTwo
+  - first:
+      213: -5739988147051743514
+    second: PlayerBody
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PlayerWeapon
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 73
+        width: 24
+        height: 54
+      alignment: 9
+      pivot: {x: 0.053526085, y: 0.22940981}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5be6ea41d419de480800000000000000
+      internalID: -8868272330977153355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerSprite_1
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 25
+        width: 15
+        height: 34
+      alignment: 9
+      pivot: {x: 0.43505833, y: 0.8581342}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 342b60e8d2d6c1850800000000000000
+      internalID: 6349069617109316163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerLegTwo
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 27
+        width: 19
+        height: 34
+      alignment: 9
+      pivot: {x: 0.28240165, y: 0.71887827}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a05a0128bd2fbb70800000000000000
+      internalID: 8916896056068427944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerBody
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 67
+        width: 30
+        height: 58
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones:
+      - name: bone_1
+        position: {x: 17.135498, y: 32.500618, z: 0}
+        rotation: {x: 0, y: 0, z: -0.69883853, w: 0.71527946}
+        length: 18.909462
+        parentId: -1
+      - name: bone_2
+        position: {x: 11.859867, y: -12.781887, z: 0}
+        rotation: {x: 0, y: 0, z: -0.56804305, w: 0.8229988}
+        length: 13.635807
+        parentId: -1
+      - name: bone_3
+        position: {x: 13.63581, y: -0.0000019623583, z: 0}
+        rotation: {x: 0, y: 0, z: -0.4285717, w: 0.9035078}
+        length: 13.1964
+        parentId: 1
+      - name: bone_4
+        position: {x: 34.720936, y: -14.980068, z: 0}
+        rotation: {x: 0, y: 0, z: -0.55351937, w: 0.83283633}
+        length: 23.841892
+        parentId: -1
+      - name: bone_5
+        position: {x: 42.634384, y: 18.432266, z: 0}
+        rotation: {x: 0, y: 0, z: -0.4360937, w: 0.8999013}
+        length: 10.64246
+        parentId: -1
+      - name: bone_6
+        position: {x: 10.64246, y: 0.000002385836, z: 0}
+        rotation: {x: 0, y: 0, z: 0.7880946, w: 0.6155543}
+        length: 12.223141
+        parentId: 4
+      spriteID: 6e6370821377750b0800000000000000
+      internalID: -5739988147051743514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
