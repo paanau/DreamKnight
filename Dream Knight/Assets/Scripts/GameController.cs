@@ -26,76 +26,50 @@ public class GameController : MonoBehaviour
         playerDepleteRate = 10;
         enemyDepleteRate = 20;
         playerController = playerCharacter.GetComponent<CharacterControl>();
-        playerController.SetGameController(this.gameObject);
+        playerController.SetGameController(gameObject);
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
+        }
+
+        StartPlayerTurn();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerTurn && gameActive)
+        if (gameActive)
         {
-            if (!chargeActive) {
-                if (Input.GetAxis("Charge") > 0)
-                {
-                    if (chargeEnergy < maxEnergy)
-                    {
-                        chargeEnergy += playerChargeRate;
-                    }
-                    poweringUp = true;
-                }
-                if (Input.GetAxis("Charge") <= 0 && poweringUp)
-                {
-                    enemyEnergy = chargeEnergy;
-                    poweringUp = false;
-                    chargeActive = true;
-                }
-            }
-            if (chargeActive)
+            if (playerTurn)
             {
-                if (chargeEnergy > 0)
+                if (!chargeActive)
                 {
-                    if (!inCombat)
+                    PowerUpSequence();
+                }
+                if (chargeActive)
+                {
+                    if (chargeEnergy > 0)
                     {
-                        playerCharacter.transform.Translate(0.1f * rushSpeedBoost * chargeEnergy / maxEnergy, 0, 0);
-                        if (playerCharacter.transform.position.x >= mainCamera.transform.position.x + 1)
-                        {
-                            mainCamera.transform.Translate(0.1f * rushSpeedBoost * chargeEnergy / maxEnergy, 0, 0);
-                        }
+                        chargeEnergy -= playerDepleteRate;
+                        PlayerRush();
                     }
-                    
                     else
                     {
-                        DoCombat();
+                        EndPlayerTurn();
                     }
-
-                    chargeEnergy -= playerDepleteRate;
+                }
+            }
+            if (!playerTurn)
+            {
+                if (enemyEnergy > 0)
+                {
+                    EnemiesAct();
                 }
                 else
                 {
-                    EndPlayerTurn();
+                    StartPlayerTurn();
                 }
-            }
-        }
-        if (!playerTurn && gameActive)
-        {
-            if (enemyEnergy > 0)
-            {
-                foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-                {
-                    if (enemy.GetComponent<CharacterControl>().IsAlive() && enemy.GetComponent<CharacterControl>().IsNotInCombat() && enemy.GetComponent<CharacterControl>().IsNotWaiting())
-                    {
-                        enemy.transform.Translate(-0.1f * enemy.GetComponent<CharacterControl>().GetSpeed(), 0, 0);
-                    }
-                    if (!enemy.GetComponent<CharacterControl>().IsNotInCombat() && enemy.GetComponent<CharacterControl>().IsAlive())
-                    {
-                        DoCombat();
-                    }
-                }
-                enemyEnergy -= enemyDepleteRate;
-            }
-            else
-            {
-                StartPlayerTurn();
             }
         }
     }
@@ -108,6 +82,8 @@ public class GameController : MonoBehaviour
         }
         currentMeleeTarget = target;
         currentMeleeTargetController = target.GetComponent<CharacterControl>();
+        currentMeleeTargetController.StopWalking();
+        playerController.StopWalking();
         inCombat = true;
         playerAttackCooldown = 0;
         targetAttackCooldown = 0;
@@ -130,9 +106,10 @@ public class GameController : MonoBehaviour
     {
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            if (enemy.GetComponent<CharacterControl>().IsAlive() && enemy.GetComponent<CharacterControl>().IsNotInCombat())
+            CharacterControl ec = enemy.GetComponent<CharacterControl>();
+            if (ec.IsAlive() && ec.IsNotInCombat())
             {
-                enemy.GetComponent<CharacterControl>().StopWaiting();
+                ec.StopWaiting();
             }
         }
     }
@@ -176,6 +153,7 @@ public class GameController : MonoBehaviour
     {
         enemyEnergy = 0;
         playerTurn = true;
+        ChangeTurns();
     }
     
     private void EndPlayerTurn()
@@ -183,5 +161,72 @@ public class GameController : MonoBehaviour
         chargeEnergy = 0;
         playerTurn = false;
         chargeActive = false;
+        ChangeTurns();
+    }
+
+    private void ChangeTurns()
+    {
+        playerController.SetMyTurn(playerTurn);
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            CharacterControl ec = enemy.GetComponent<CharacterControl>();
+            if (ec.IsAlive())
+            {
+                ec.SetMyTurn(!playerTurn);
+            }
+        }
+    }
+
+    private void PowerUpSequence()
+    {
+        if (Input.GetAxis("Charge") > 0)
+        {
+            if (chargeEnergy < maxEnergy)
+            {
+                chargeEnergy += playerChargeRate;
+            }
+            poweringUp = true;
+        }
+        if (Input.GetAxis("Charge") <= 0 && poweringUp)
+        {
+            enemyEnergy = chargeEnergy;
+            poweringUp = false;
+            chargeActive = true;
+        }
+    }
+
+    private void PlayerRush()
+    {
+        if (!inCombat)
+        {
+            playerController.AdvanceMe(rushSpeedBoost * chargeEnergy / maxEnergy);
+
+            if (playerCharacter.transform.position.x >= mainCamera.transform.position.x - 3)
+            {
+                mainCamera.transform.position = new Vector3(playerCharacter.transform.position.x + 3, 2, -10);
+            }
+        }
+
+        else
+        {
+            DoCombat();
+        }
+    }
+
+    private void EnemiesAct()
+    {
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            CharacterControl ec = enemy.GetComponent<CharacterControl>();
+            if (ec.CanAdvance())
+            {
+                ec.AdvanceMe(1);
+            }
+            if (ec.CanFight())
+            {
+                DoCombat();
+            }
+        }
+        enemyEnergy -= enemyDepleteRate;
     }
 }

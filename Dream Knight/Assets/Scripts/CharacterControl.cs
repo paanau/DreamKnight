@@ -5,9 +5,10 @@ using UnityEngine;
 public class CharacterControl : MonoBehaviour
 {
     private GameObject gameController;
+    private Animator myWalkingAnimator;
     private GameController main;
     private float range, attackCooldown;
-    private bool inCombat, isAlive, waiting;
+    private bool inCombat, isAlive, waiting, myTurn;
     public int currentHP, maxHP, myDamage, mySpeed;
     public bool isPlayer;
     private int directionModifier;
@@ -30,22 +31,27 @@ public class CharacterControl : MonoBehaviour
             attackCooldown = 0.6f;
             directionModifier = 1;
         }
+        myWalkingAnimator = GetComponent<Animator>();
+        myWalkingAnimator.speed = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
-        if (hit.collider != null && !inCombat && !waiting && hit.collider.gameObject != gameObject)
+        if (myTurn && isAlive)
         {
-            if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), 0), -Vector2.up);
+            if (hit.collider != null && hit.collider.gameObject != gameObject)
             {
-                waiting = true;
-            }
-            else
-            {
-                inCombat = true;
-                main.InitiateCombat(gameObject, hit.collider.gameObject);
+                if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
+                {
+                    waiting = true;
+                }
+                else
+                {
+                    inCombat = true;
+                    main.InitiateCombat(gameObject, hit.collider.gameObject);
+                }
             }
         }
     }
@@ -128,5 +134,39 @@ public class CharacterControl : MonoBehaviour
     public bool IsNotWaiting()
     {
         return !waiting;
+    }
+
+    public void SetMyTurn(bool value)
+    {
+        myTurn = value;
+    }
+
+    public void AdvanceMe(float modifiers)
+    {
+        transform.Translate(0.1f * modifiers * mySpeed * directionModifier, 0, 0);
+        myWalkingAnimator.speed = modifiers * mySpeed;
+    }
+
+    public bool CanAdvance()
+    {
+        if (isAlive && !waiting && !inCombat)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool CanFight()
+    {
+        if (isAlive && inCombat && myTurn)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void StopWalking()
+    {
+        myWalkingAnimator.speed = 0;
     }
 }
