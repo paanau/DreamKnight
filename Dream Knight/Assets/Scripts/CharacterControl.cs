@@ -38,7 +38,7 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (myTurn && isAlive)
+        if (myTurn && isAlive && !inCombat)
         {
             RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), 0), -Vector2.up);
             if (hit.collider != null && hit.collider.gameObject != gameObject)
@@ -52,13 +52,9 @@ public class CharacterControl : MonoBehaviour
                     inCombat = true;
                     main.InitiateCombat(gameObject, hit.collider.gameObject);
                     myAnimator.SetTrigger("enterCombat");
-                    myAnimator.speed = 1;
+                    myAnimator.speed = 1f / attackCooldown;
                 }
             }
-        }
-        if (!myTurn && isAlive)
-        {
-            myAnimator.speed = 1;
         }
     }
 
@@ -179,8 +175,8 @@ public class CharacterControl : MonoBehaviour
         return false;
     }
 
-    public void StopWalking()
+    public void SetAnimationSpeed(float newSpeed)
     {
-        myAnimator.speed = 0;
+        myAnimator.speed = newSpeed;
     }
 }

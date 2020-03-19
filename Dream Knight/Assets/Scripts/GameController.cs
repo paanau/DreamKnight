@@ -1,23 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat;
+    private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
+    private bool chargeButton;
     public int chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown;
     public GameObject playerCharacter, mainCamera;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
+    private PlayerInput playerInput;
 
     // Start is called before the first frame update
     void Start()
     {
+        playerInput = GetComponent<PlayerInput>();
         gameActive = true;
         playerTurn = true;
         chargeActive = false;
         poweringUp = false;
+        firstTurn = true;
         chargeEnergy = 0;
         maxEnergy = 10000;
         rushSpeedBoost = 5f;
@@ -32,7 +38,6 @@ public class GameController : MonoBehaviour
         {
             enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
         }
-
         StartPlayerTurn();
     }
 
@@ -82,11 +87,9 @@ public class GameController : MonoBehaviour
         }
         currentMeleeTarget = target;
         currentMeleeTargetController = target.GetComponent<CharacterControl>();
-        currentMeleeTargetController.StopWalking();
-        playerController.StopWalking();
         inCombat = true;
-        playerAttackCooldown = 0;
-        targetAttackCooldown = 0;
+        playerAttackCooldown = playerController.GetCooldown();
+        targetAttackCooldown = currentMeleeTargetController.GetCooldown();
     }
 
     private void MeleeTick()
@@ -166,20 +169,38 @@ public class GameController : MonoBehaviour
 
     private void ChangeTurns()
     {
+        float animationActive = 1;
+        if (playerTurn && !firstTurn)
+        {
+            animationActive = 0;
+        }
         playerController.SetMyTurn(playerTurn);
+        playerController.SetAnimationSpeed(animationActive);
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
+            ec.SetAnimationSpeed(animationActive);
             if (ec.IsAlive())
             {
                 ec.SetMyTurn(!playerTurn);
             }
         }
+        firstTurn = false;
+    }
+
+    public void OnCharge()
+    {
+        chargeButton = !chargeButton;
+    }
+
+    public void OnRestart()
+    {
+        SceneManager.LoadScene(0);
     }
 
     private void PowerUpSequence()
     {
-        if (Input.GetAxis("Charge") > 0)
+        if (chargeButton)
         {
             if (chargeEnergy < maxEnergy)
             {
@@ -187,7 +208,7 @@ public class GameController : MonoBehaviour
             }
             poweringUp = true;
         }
-        if (Input.GetAxis("Charge") <= 0 && poweringUp)
+        if (!chargeButton && poweringUp)
         {
             enemyEnergy = chargeEnergy;
             poweringUp = false;
