@@ -14,14 +14,14 @@ public class CamMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.D))
-		{
-			transform.Translate(new Vector3(1,0,0) * speed);
-		}
-		if(Input.GetKey(KeyCode.A))
-		{
-			transform.Translate(new Vector3(1,0,0) * -speed);
-		}
+  //      if(Input.GetKey(KeyCode.D))
+		//{
+		//	transform.Translate(new Vector3(1,0,0) * speed);
+		//}
+		//if(Input.GetKey(KeyCode.A))
+		//{
+		//	transform.Translate(new Vector3(1,0,0) * -speed);
+		//}
 	
 	}
 }
