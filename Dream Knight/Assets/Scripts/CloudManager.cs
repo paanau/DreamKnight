@@ -22,7 +22,10 @@ public class CloudManager : MonoBehaviour
             float yBottom = targetArea.transform.position.y - targetArea.transform.localScale.y / 2;
             float yTop = targetArea.transform.position.y + targetArea.transform.localScale.y / 2;
             //Debug.Log(xLeft.ToString() + " " + xRight.ToString() + " " + yBottom.ToString() + " " + yTop.ToString());
-            fogClouds.Add(GameObject.Instantiate(cloud, new Vector3(Random.Range(xLeft, xRight), Random.Range(yBottom, yTop), 0), Quaternion.identity));
+            GameObject newCloud = GameObject.Instantiate(cloud, new Vector3(Random.Range(xLeft, xRight), Random.Range(yBottom, yTop), 0), Quaternion.identity);
+            fogClouds.Add(newCloud);
+            newCloud.SetActive(true);
+            newCloud.transform.SetParent(GameObject.Find("Clouds").transform);            
         }
     }
 
