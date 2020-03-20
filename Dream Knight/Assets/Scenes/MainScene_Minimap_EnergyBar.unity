@@ -806,6 +806,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1985301827, guid: 98bf235ff3e5af841b90f66ed49e99ec, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 501691221506147092, guid: 98bf235ff3e5af841b90f66ed49e99ec,
         type: 3}
       propertyPath: m_AnchoredPosition.x
