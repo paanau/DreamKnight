@@ -14,7 +14,25 @@ public class GameController : MonoBehaviour
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
+    private List<GameObject> enemies = new List<GameObject>();
 
+
+    void Awake(){
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
+            // Populate list of enemies. TODO autogeneration of enemies
+            enemies.Add(enemy);
+        }
+       
+        // Sort list in order of x-position
+        if (enemies.Count > 0) {
+        enemies.Sort(delegate(GameObject a, GameObject b) {
+            return (a.transform.position.x).CompareTo(b.transform.position.x);
+            });
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -34,10 +52,8 @@ public class GameController : MonoBehaviour
         playerController = playerCharacter.GetComponent<CharacterControl>();
         playerController.SetGameController(gameObject);
 
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
-        }
+
+
         StartPlayerTurn();
     }
 
@@ -249,5 +265,10 @@ public class GameController : MonoBehaviour
             }
         }
         enemyEnergy -= enemyDepleteRate;
+    }
+
+    public List<GameObject> GetEnemies()
+    {
+        return enemies;
     }
 }
