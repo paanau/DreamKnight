@@ -33,7 +33,7 @@ public class CloudManager : MonoBehaviour
         {
             Debug.Log(cloud.transform.position.x - Camera.main.transform.position.x);
             // If offscreen to the left, move back into bounds
-            if(cloud.transform.position.x - Camera.main.transform.position.x < -15)
+            if(cloud.transform.position.x - Camera.main.transform.position.x < -12)
             {            
                 
                 float xLeft = targetArea.transform.position.x - targetArea.transform.localScale.x / 2;
