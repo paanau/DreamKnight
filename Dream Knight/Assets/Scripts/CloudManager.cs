@@ -6,14 +6,19 @@ public class CloudManager : MonoBehaviour
 {
     public GameObject[] cloudObject;
     private List<float> speeds = new List<float>();
+    float[] speedLimits = {0.8f, 1.2f};
     public GameObject targetArea;
     List<GameObject> fogClouds = new List<GameObject>();
+    public enum colors {blue, green, pink, red, purple, white };
     // Spawn all clouds at the start
     // Move the ones that are not on the screen in front of the player
 
     // Start is called before the first frame update
     void Start()
     {
+       // colorOptions[0, 1] = new Color(1,0.5f,0.5f,0.6f);// Blue
+
+
         Debug.Log("Making clouds");
         // Instantiate clouds
         foreach (GameObject cloud in cloudObject)
@@ -29,9 +34,12 @@ public class CloudManager : MonoBehaviour
             newCloud.transform.SetParent(GameObject.Find("Clouds").transform);
 
             // Set cloud speed
-            speeds.Add(Random.Range(0.8f, 1.2f));
+            speeds.Add(Random.Range(speedLimits[0], speedLimits[1]));
 
         }
+
+        // Testing colour adjustment
+        SetCloudColor(Color.red);
     }
 
     // Update is called once per frame
@@ -55,6 +63,17 @@ public class CloudManager : MonoBehaviour
                 
                 cloud.transform.position = new Vector2(Random.Range(xLeft, xRight),  Random.Range(yBottom, yTop));
             }
+        }
+    }
+
+    public void SetCloudColor(Color color)
+    {
+        foreach (GameObject cloud in fogClouds)
+        {
+            // Retain the existing transparency
+            SpriteRenderer sprite = cloud.GetComponent<SpriteRenderer>();
+            float alpha = sprite.color.a;
+            sprite.color = new Color(color.r, color.g, color.b, alpha);
         }
     }
 }

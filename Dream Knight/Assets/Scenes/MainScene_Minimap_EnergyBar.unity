@@ -397,6 +397,7 @@ GameObject:
   - component: {fileID: 419819845}
   - component: {fileID: 419819846}
   - component: {fileID: 419819847}
+  - component: {fileID: 419819848}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -597,6 +598,38 @@ MonoBehaviour:
   - {fileID: 171231791}
   - {fileID: 1843953075}
   targetArea: {fileID: 1088123436}
+--- !u!114 &419819848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419819842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 042263707571b524b8099679fa60e0e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameColors:
+  - {r: 1, g: 0.5613208, b: 0.8407371, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  gameColorNames:
+  - Red
+  - 
+  - 
+  - 
+  - 
+  - 
+  cols:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &457789964 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2790021048867405799, guid: 98a006f1dbf7c8e49a10b2ade2b7439a,
