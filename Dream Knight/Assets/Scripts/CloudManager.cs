@@ -5,6 +5,7 @@ using UnityEngine;
 public class CloudManager : MonoBehaviour
 {
     public GameObject[] cloudObject;
+    private List<float> speeds = new List<float>();
     public GameObject targetArea;
     List<GameObject> fogClouds = new List<GameObject>();
     // Spawn all clouds at the start
@@ -25,18 +26,26 @@ public class CloudManager : MonoBehaviour
             GameObject newCloud = GameObject.Instantiate(cloud, new Vector3(Random.Range(xLeft, xRight), Random.Range(yBottom, yTop), 0), Quaternion.identity);
             fogClouds.Add(newCloud);
             newCloud.SetActive(true);
-            newCloud.transform.SetParent(GameObject.Find("Clouds").transform);            
+            newCloud.transform.SetParent(GameObject.Find("Clouds").transform);
+
+            // Set cloud speed
+            speeds.Add(Random.Range(0.8f, 1.2f));
+
         }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        int i = 0;
         foreach (GameObject cloud in fogClouds)
         {
-            Debug.Log(cloud.transform.position.x - Camera.main.transform.position.x);
+            // Move all the clouds
+            cloud.transform.Translate(new Vector2(-speeds[i], 0) * Time.deltaTime);
+            i += 1;
+            // Debug.Log(cloud.transform.position.x - Camera.main.transform.position.x);
             // If offscreen to the left, move back into bounds
-            if(cloud.transform.position.x - Camera.main.transform.position.x < -12)
+            if(cloud.transform.position.x - Camera.main.transform.position.x < -20)
             {            
                 
                 float xLeft = targetArea.transform.position.x - targetArea.transform.localScale.x / 2;
