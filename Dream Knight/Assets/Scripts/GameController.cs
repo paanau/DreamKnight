@@ -7,9 +7,9 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
-    private bool chargeButton;
+    private bool chargeButton, slowdownActive;
     public int chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
-    private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown;
+    [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
     public GameObject playerCharacter, mainCamera;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
        
         // Sort list in order of x-position
         if (enemies.Count > 0) {
-        enemies.Sort(delegate(GameObject a, GameObject b) {
+            enemies.Sort(delegate(GameObject a, GameObject b) {
             return (a.transform.position.x).CompareTo(b.transform.position.x);
             });
         }
@@ -42,6 +42,7 @@ public class GameController : MonoBehaviour
         chargeActive = false;
         poweringUp = false;
         firstTurn = true;
+        slowdownActive = false;
         chargeEnergy = 0;
         maxEnergy = 10000;
         rushSpeedBoost = 5f;
@@ -51,7 +52,7 @@ public class GameController : MonoBehaviour
         enemyDepleteRate = 20;
         playerController = playerCharacter.GetComponent<CharacterControl>();
         playerController.SetGameController(gameObject);
-
+        gameRunSpeed = 1f;
 
 
         StartPlayerTurn();
@@ -185,21 +186,26 @@ public class GameController : MonoBehaviour
 
     private void ChangeTurns()
     {
-        float animationActive = 1;
+        gameRunSpeed = 1;
         if (playerTurn && !firstTurn)
         {
-            animationActive = 0;
+            gameRunSpeed = 0;
         }
         playerController.SetMyTurn(playerTurn);
-        playerController.SetAnimationSpeed(animationActive);
+        playerController.SetAnimationSpeed(gameRunSpeed);
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
-            ec.SetAnimationSpeed(animationActive);
+            ec.SetAnimationSpeed(gameRunSpeed);
             if (ec.IsAlive())
             {
                 ec.SetMyTurn(!playerTurn);
             }
+        }
+        foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile"))
+        {
+            ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
+            ps.SetAnimationSpeed(gameRunSpeed);
         }
         firstTurn = false;
     }
@@ -212,6 +218,79 @@ public class GameController : MonoBehaviour
     public void OnRestart()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void OnMove(InputValue iv)
+    {
+        Vector2 direction = iv.Get<Vector2>();
+        if (playerTurn)
+        {
+            UseAbility(direction);
+        }
+        else
+        {
+            UseItem(direction);
+        }
+    }
+
+    private void UseAbility(Vector2 direction)
+    {
+        if (direction != Vector2.zero)
+        {
+            if (direction.x != 0)
+            {
+                if (direction.x < 0)
+                {
+                    // Defense
+                }
+                else
+                {
+                    // Melee attack
+                }
+            }
+            if (direction.y != 0)
+            {
+                if (direction.y < 0)
+                {
+                    // Vehicle
+                }
+                else
+                {
+                    // Ranged attack
+                    playerController.UseAbility("w");
+                    Debug.Log("Pew!");
+                }
+            }
+        }
+    }
+
+    private void UseItem(Vector2 direction)
+    {
+        if (direction != Vector2.zero)
+        {
+            if (direction.x != 0)
+            {
+                if (direction.x < 0)
+                {
+                    // Left
+                }
+                else
+                {
+                    // Right
+                }
+            }
+            if (direction.y != 0)
+            {
+                if (direction.y < 0)
+                {
+                    // Down
+                }
+                else
+                {
+                    // Up
+                }
+            }
+        }
     }
 
     private void PowerUpSequence()

@@ -295,6 +295,11 @@ MonoBehaviour:
   playerChargeRate: 0
   playerDepleteRate: 0
   enemyDepleteRate: 0
+  rushSpeedBoost: 0
+  rushDamageBoost: 0
+  playerAttackCooldown: 0
+  targetAttackCooldown: 0
+  gameRunSpeed: 0
   playerCharacter: {fileID: 3174515330733266124}
   mainCamera: {fileID: 519420028}
 --- !u!4 &419819844
@@ -309,7 +314,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &419819845
 MonoBehaviour:
@@ -794,6 +799,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3174515330733266125, guid: 173487e6b59670f458c32ab3cb0ee96c,
+        type: 3}
+      propertyPath: fireB
+      value: 
+      objectReference: {fileID: 1589657863535395054, guid: 490513923fec4f74a9540cc1f96fd5e9,
+        type: 3}
     - target: {fileID: 7752140210106959773, guid: 173487e6b59670f458c32ab3cb0ee96c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -917,7 +928,7 @@ PrefabInstance:
     - target: {fileID: 4749821695297356607, guid: 10f6a209fc72c124a920fc400f4bff20,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4749821695297356607, guid: 10f6a209fc72c124a920fc400f4bff20,
         type: 3}
