@@ -398,6 +398,7 @@ GameObject:
   - component: {fileID: 419819846}
   - component: {fileID: 419819847}
   - component: {fileID: 419819848}
+  - component: {fileID: 419819849}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -423,6 +424,11 @@ MonoBehaviour:
   playerChargeRate: 0
   playerDepleteRate: 0
   enemyDepleteRate: 0
+  rushSpeedBoost: 0
+  rushDamageBoost: 0
+  playerAttackCooldown: 0
+  targetAttackCooldown: 0
+  gameRunSpeed: 0
   playerCharacter: {fileID: 3174515330733266124}
   mainCamera: {fileID: 519420028}
 --- !u!4 &419819844
@@ -630,6 +636,18 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &419819849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419819842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39c7b1046b97a548af9aa2e86d0a370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &457789964 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2790021048867405799, guid: 98a006f1dbf7c8e49a10b2ade2b7439a,
