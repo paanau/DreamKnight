@@ -7,19 +7,21 @@ public class CharacterControl : MonoBehaviour
     private GameObject gameController;
     private Animator myAnimator;
     private GameController main;
-    private float range, attackCooldown;
+    private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
     private bool inCombat, isAlive, waiting, myTurn;
-    public int currentHP, maxHP, myDamage, mySpeed;
-    public bool isPlayer;
+    [SerializeField] private int currentHP, baseMaxHP, baseDamage, shieldHealth;
+    [SerializeField] private bool isPlayer;
+    [SerializeField] private GameObject fireB;
     private int directionModifier;
+
     // Start is called before the first frame update
     void Start()
     {
         isAlive = true;
-        maxHP = 1000;
-        currentHP = maxHP;
-        myDamage = 30;
-        mySpeed = 1;
+        baseMaxHP = 1000;
+        currentHP = baseMaxHP;
+        baseDamage = 30;
+        baseSpeed = 1;
         inCombat = false;
         waiting = false;
         range = 2f;
@@ -27,12 +29,15 @@ public class CharacterControl : MonoBehaviour
         directionModifier = -1;
         if (isPlayer)
         {
-            myDamage = 100;
+            baseDamage = 100;
             attackCooldown = 0.6f;
             directionModifier = 1;
         }
         myAnimator = GetComponent<Animator>();
         myAnimator.speed = 1;
+        gameRunSpeed = 1;
+        speedModifiers = 1;
+        damageModifiers = 1;
     }
 
     // Update is called once per frame
@@ -55,6 +60,21 @@ public class CharacterControl : MonoBehaviour
                     myAnimator.speed = 1f / attackCooldown;
                 }
             }
+            if (speedModifiers > 1)
+            {
+                speedModifiers -= Time.deltaTime;
+            } else
+            {
+                speedModifiers = 1;
+            }
+            if (damageModifiers > 1)
+            {
+                damageModifiers -= Time.deltaTime;
+            }
+            else
+            {
+                damageModifiers = 1;
+            }
         }
     }
 
@@ -66,12 +86,35 @@ public class CharacterControl : MonoBehaviour
 
     public int DamageDealt()
     {
-        return myDamage;
+        int damageDealt = Mathf.FloorToInt(baseDamage * damageModifiers);
+        if (damageModifiers > 2)
+        {
+            damageModifiers -= 1;
+        }
+        else
+        {
+            damageModifiers = 1;
+        }
+        return damageDealt;
     }
 
     public bool DamageTaken(int damage)
     {
-        if (damage > maxHP)
+        if (shieldHealth > 0)
+        {
+            if (shieldHealth >= damage)
+            {
+                shieldHealth -= damage;
+                damage = 0;
+            }
+            else
+            {
+                damage -= shieldHealth;
+                shieldHealth = 0;
+            }
+        }
+
+        if (damage > baseMaxHP)
         {
             CriticalDeath();
         }
@@ -129,9 +172,9 @@ public class CharacterControl : MonoBehaviour
         return !inCombat;
     }
 
-    public int GetSpeed()
+    public float GetSpeed()
     {
-        return mySpeed;
+        return baseSpeed * speedModifiers;
     }
 
     public void StopWaiting()
@@ -153,8 +196,8 @@ public class CharacterControl : MonoBehaviour
     public void AdvanceMe(float modifiers)
     {
         myAnimator.SetTrigger("move");
-        transform.Translate(0.1f * modifiers * mySpeed * directionModifier, 0, 0);
-        myAnimator.speed = modifiers * mySpeed + 1;
+        transform.Translate(0.1f * modifiers * speedModifiers * baseSpeed * directionModifier, 0, 0);
+        myAnimator.speed = modifiers * baseSpeed + 1;
     }
 
     public bool CanAdvance()
@@ -177,6 +220,30 @@ public class CharacterControl : MonoBehaviour
 
     public void SetAnimationSpeed(float newSpeed)
     {
-        myAnimator.speed = newSpeed;
+        myAnimator.speed = newSpeed * speedModifiers;
+        gameRunSpeed = newSpeed * speedModifiers;
+    }
+
+    public void UseAbility(string s)
+    {
+        if (s == "w")
+        {
+            GameObject fb = Instantiate(fireB, transform.position, Quaternion.identity);
+            ProjectileScript ps = fb.GetComponent<ProjectileScript>();
+            ps.GiveSettings(myAnimator.speed * 0.1f, 10, 100);
+            ps.SetAnimationSpeed(gameRunSpeed);
+        }
+        if (s == "s")
+        {
+            speedModifiers = 2;
+        }
+        if (s == "a")
+        {
+            shieldHealth += 100;
+        }
+        if (s == "d")
+        {
+            damageModifiers = 10;
+        }
     }
 }

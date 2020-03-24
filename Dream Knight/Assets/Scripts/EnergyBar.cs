@@ -20,17 +20,16 @@ public class EnergyBar : MonoBehaviour
     public GameObject playerBar;
     public GameObject enemyBarCharge;
     float tester = 1.0f;
+    private GameController gameController;
 
     int barMode = 0; // 0 player charging, 1 player depleting, 2 enemy depleting 
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(MapEnergy(1, 20));
-        Debug.Log(MapEnergy(17, 20));
-        Debug.Log(MapEnergy(20, 20));
         currentPlayerEnergy = 0;
         playerBar.GetComponent<RectTransform>().SetLeft(energyBarBounds[1]);
+        gameController = GameObject.Find("GameController").GetComponent<GameController>();
     }
 
     float MapEnergy(float currentEnergy, float maxPlayerEnergy)
@@ -78,7 +77,10 @@ public class EnergyBar : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        runDemo();
+        currentPlayerEnergy = gameController.chargeEnergy;
+        currentEnemyEnergy = gameController.enemyEnergy;
+        maxPlayerEnergy = gameController.maxEnergy;
+        //runDemo();
         playerBar.GetComponent<RectTransform>().SetRight(MapEnergy(currentPlayerEnergy, maxPlayerEnergy));
         enemyBarCharge.GetComponent<RectTransform>().SetRight(MapEnergy(currentEnemyEnergy, maxPlayerEnergy));
     }
