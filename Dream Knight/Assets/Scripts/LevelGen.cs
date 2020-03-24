@@ -9,7 +9,7 @@ public class LevelGen : MonoBehaviour
     // Enemy types
     public GameObject[] enemyTypes;
     // Boss types
-    public GameObject bossTypes;
+    public GameObject[] bossTypes;
 
     // Enemy list? 
     public List<GameObject> enemies;
@@ -22,7 +22,7 @@ public class LevelGen : MonoBehaviour
     {
         enemies = GameObject.Find("GameController").GetComponent<GameController>().GetEnemies();
         int[] bounds = { 0, 0 };
-        CreateLevel(20,bounds, 0);
+        CreateLevel(20, bounds, 0);
     }
 
     // Update is called once per frame
@@ -39,20 +39,66 @@ public class LevelGen : MonoBehaviour
         float startBuffer = 10;
         // Space between enemies
         float[] enemyBuffer = { 4.0f, 8.0f };
+        int enemyLevel = enemyBounds[0];
+        if(enemyBounds[1] == 0 || enemyBounds[1] < enemyBounds[0])
+        {
+            enemyBounds[1] = enemyBounds[0];
+        }
         int enemiesPerTier = enemyCount % (enemyBounds[1] - enemyBounds[0] + 1);
-        int enemiesCreated;
+
         // Get player x-position
+        GameObject newEnemy = null;
+        GameObject oldEnemy;
+
         float playerX = GameObject.Find("Character").transform.position.x; 
         for(int i = 0; i < enemyCount; i++)
-
         {
             if(levelType == levelTypes.standard)
             {
+                // Different location for first enemy. All the others are relative to the most recent enemy
 
-                GameObject newEnemy = Instantiate(enemyTypes[0], new Vector2(startBuffer + i * Random.Range(enemyBuffer[0], enemyBuffer[1]), 0), Quaternion.identity);
+                if (i == 0)
+                {
+                    newEnemy = Instantiate(enemyTypes[enemyLevel], new Vector2(startBuffer + i * Random.Range(enemyBuffer[0], enemyBuffer[1]), 0), Quaternion.identity);
+                }
+                else
+                {
+                    Debug.Log(newEnemy.transform.position.x + " WOOOO");
+                    oldEnemy = newEnemy;
+                    newEnemy = Instantiate(enemyTypes[enemyLevel], new Vector2(oldEnemy.transform.position.x + Random.Range(enemyBuffer[0], enemyBuffer[1]), 0), Quaternion.identity);
+                }
+
                 enemies.Add(newEnemy);
+
+                if (i > 0)
+                {
+                    // Time to create tougher enemies?
+                    if (enemiesPerTier % i == 0)
+                    {
+                        Debug.Log("Tougher enemies!");
+                        // Can't be a higher level than the upper bound, or amount of actual enemies to choose from
+                        if (enemyBounds[1] > enemies.Count - 1)
+                        {
+                            enemyLevel = enemyTypes.Length - 1;
+
+                        }
+                        else
+                        {
+                            enemyLevel++;
+                        }
+                    }
+                }
+            }
+
+            // On the final loop
+            // add boss, if exists
+            if (i == enemyCount - 1 && bossType > 0)
+            {
+                GameObject newBoss = Instantiate(bossTypes[bossType], new Vector2(newEnemy.transform.position.x + Random.Range(enemyBuffer[0], enemyBuffer[1]), 0), Quaternion.identity);
             }
         }
+
+
     }
 
     // Method to clear all enemies 
