@@ -193,26 +193,23 @@ public class GameController : MonoBehaviour
         }
         playerController.SetMyTurn(playerTurn);
         playerController.SetAnimationSpeed(gameRunSpeed);
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            CharacterControl ec = enemy.GetComponent<CharacterControl>();
-            ec.SetAnimationSpeed(gameRunSpeed);
-            if (ec.IsAlive())
-            {
-                ec.SetMyTurn(!playerTurn);
-            }
-        }
-        foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile"))
-        {
-            ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
-            ps.SetAnimationSpeed(gameRunSpeed);
-        }
+        ActivateEnemies();
+        ActivateProjectiles();
         firstTurn = false;
     }
 
     public void OnCharge()
     {
         chargeButton = !chargeButton;
+
+        if (playerTurn && chargeActive)
+        {
+            PauseForAbility();
+        }
+        if (!playerTurn)
+        {
+            PauseForItem();
+        }
     }
 
     public void OnRestart()
@@ -349,5 +346,37 @@ public class GameController : MonoBehaviour
     public List<GameObject> GetEnemies()
     {
         return enemies;
+    }
+
+    private void PauseForAbility()
+    {
+
+    }
+
+    private void PauseForItem()
+    {
+
+    }
+
+    private void ActivateEnemies()
+    {
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            CharacterControl ec = enemy.GetComponent<CharacterControl>();
+            ec.SetAnimationSpeed(gameRunSpeed);
+            if (ec.IsAlive())
+            {
+                ec.SetMyTurn(!playerTurn);
+            }
+        }
+    }
+
+    private void ActivateProjectiles()
+    {
+        foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile"))
+        {
+            ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
+            ps.SetAnimationSpeed(gameRunSpeed);
+        }
     }
 }

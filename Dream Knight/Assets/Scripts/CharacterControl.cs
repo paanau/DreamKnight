@@ -230,7 +230,7 @@ public class CharacterControl : MonoBehaviour
         {
             GameObject fb = Instantiate(fireB, transform.position, Quaternion.identity);
             ProjectileScript ps = fb.GetComponent<ProjectileScript>();
-            ps.GiveSettings(myAnimator.speed * 0.1f, 10, 100);
+            ps.GiveSettings((1 + myAnimator.speed) * 0.1f, 10, 100);
             ps.SetAnimationSpeed(gameRunSpeed);
         }
         if (s == "s")
