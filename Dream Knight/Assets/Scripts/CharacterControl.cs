@@ -167,6 +167,11 @@ public class CharacterControl : MonoBehaviour
         return isAlive;
     }
 
+    public void SetAlive(bool alive)
+    {
+        isAlive = alive;
+    }
+
     public bool IsNotInCombat()
     {
         return !inCombat;

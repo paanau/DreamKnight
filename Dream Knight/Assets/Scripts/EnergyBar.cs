@@ -12,7 +12,7 @@ public class EnergyBar : MonoBehaviour
     // Assume they are correct 
     // Energy bar bounds - hardcoding for 1920x1080 to begin with
     // Bar Empty, Bar Full
-    private float[] energyBarBounds = { 1495, 0};
+    private float[] energyBarBounds = { 500, 0};
     private float maxPlayerEnergy = 20.0f;
     private float currentPlayerEnergy;
     private float currentEnemyEnergy;
