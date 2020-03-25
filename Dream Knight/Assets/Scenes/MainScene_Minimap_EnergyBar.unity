@@ -409,6 +409,7 @@ GameObject:
   - component: {fileID: 419819847}
   - component: {fileID: 419819848}
   - component: {fileID: 419819849}
+  - component: {fileID: 419819850}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -662,6 +663,18 @@ MonoBehaviour:
   - {fileID: 4749821695297356604, guid: 10f6a209fc72c124a920fc400f4bff20, type: 3}
   bossTypes: []
   enemies: []
+--- !u!114 &419819850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419819842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937146951a03f0d4fbcfdf9ba0f9ee1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &457789964 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2790021048867405799, guid: 98a006f1dbf7c8e49a10b2ade2b7439a,
