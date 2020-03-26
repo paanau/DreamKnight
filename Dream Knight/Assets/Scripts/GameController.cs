@@ -238,10 +238,12 @@ public class GameController : MonoBehaviour
             {
                 if (direction.x < 0)
                 {
+                    playerController.UseAbility("a");
                     // Defense
                 }
                 else
                 {
+                    playerController.UseAbility("d");
                     // Melee attack
                 }
             }
@@ -249,6 +251,7 @@ public class GameController : MonoBehaviour
             {
                 if (direction.y < 0)
                 {
+                    playerController.UseAbility("s");
                     // Vehicle
                 }
                 else
@@ -305,6 +308,8 @@ public class GameController : MonoBehaviour
             enemyEnergy = chargeEnergy;
             poweringUp = false;
             chargeActive = true;
+            gameRunSpeed = 1;
+            ActivateProjectiles();
         }
     }
 

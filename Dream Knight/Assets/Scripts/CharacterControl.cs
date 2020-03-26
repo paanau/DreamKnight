@@ -7,11 +7,12 @@ public class CharacterControl : MonoBehaviour
     private GameObject gameController;
     private Animator myAnimator;
     private GameController main;
-    private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
+    private ParticleSystem.Particle[] effectParticles;
+    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
     private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private int currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
-    [SerializeField] private GameObject fireB;
+    [SerializeField] private GameObject fireB, effectCircle;
     private int directionModifier;
 
     // Start is called before the first frame update
@@ -60,21 +61,7 @@ public class CharacterControl : MonoBehaviour
                     myAnimator.speed = 1f / attackCooldown;
                 }
             }
-            if (speedModifiers > 1)
-            {
-                speedModifiers -= Time.deltaTime;
-            } else
-            {
-                speedModifiers = 1;
-            }
-            if (damageModifiers > 1)
-            {
-                damageModifiers -= Time.deltaTime;
-            }
-            else
-            {
-                damageModifiers = 1;
-            }
+            ManageAbilities();
         }
     }
 
@@ -235,15 +222,110 @@ public class CharacterControl : MonoBehaviour
         }
         if (s == "s")
         {
-            speedModifiers = 2;
+            speedModifiers += 2;
+            AddParticlesToEffectCircle(0, 20);
         }
         if (s == "a")
         {
             shieldHealth += 100;
+            AddParticlesToEffectCircle(1, 20);
         }
         if (s == "d")
         {
-            damageModifiers = 10;
+            damageModifiers += 10;
+            AddParticlesToEffectCircle(2, 20);
         }
+    }
+
+    private void ManageAbilities()
+    {
+        if (speedModifiers > 1)
+        {
+            speedModifiers -= Time.deltaTime;
+        }
+        else
+        {
+            speedModifiers = 1;
+        }
+        if (damageModifiers > 1)
+        {
+            damageModifiers -= Time.deltaTime;
+        }
+        else
+        {
+            damageModifiers = 1;
+        }
+
+        if (speedModifiers > 1 || damageModifiers > 1 || shieldHealth > 0)
+        {
+            float speedParticles = (speedModifiers - 1) * 10;
+            float shieldParticles = shieldHealth / 5;
+            float damageParticles = (damageModifiers - 1) * 2;
+            float totalParticleCount = speedParticles + shieldParticles + damageParticles;
+
+            float[] particleFloats = { speedParticles, shieldParticles, damageParticles };
+
+            ParticleSystem ps = effectCircle.GetComponent<ParticleSystem>();
+            var emis = ps.emission;
+            emis.rateOverTime = Mathf.FloorToInt(totalParticleCount);
+
+            var psmain = ps.main;
+            Color[] assignableColours = { Color.green, Color.blue, Color.red };
+
+            
+
+            Gradient newGradient = new Gradient();
+            GradientColorKey[] colorKey = new GradientColorKey[3];
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[3];
+            float runningTally = 0;
+            for (int i = 0; i < particleFloats.Length; i++)
+            {
+                if (particleFloats[i] > 0)
+                {
+                    colorKey[i].time = (particleFloats[i] + runningTally) / totalParticleCount;
+                    colorKey[i].color = assignableColours[i];
+                    alphaKey[i].alpha = 1;
+                    alphaKey[i].time = (particleFloats[i] + runningTally) / totalParticleCount;
+                    runningTally += particleFloats[i];
+                }
+                else
+                {
+                    colorKey[i].time = (float)i / 2;
+                    colorKey[i].color = newGradient.Evaluate((float)i / 2);
+                    alphaKey[i].alpha = 1;
+                    alphaKey[i].time = (float)i / 2;
+                }
+            }
+            newGradient.SetKeys(colorKey, alphaKey);
+            psmain.startColor = newGradient;
+
+            //float pstime = ps.time * 10;
+            //if (pstime > 1)
+            //{
+            //    pstime -= Mathf.Floor(pstime);
+            //}
+            //if (pstime < speedParticles / totalParticleCount)
+            //{
+            //    psmain.startColor = assignableColours[0];
+            //}
+            //else if (pstime < (shieldParticles + speedParticles) / totalParticleCount)
+            //{
+            //    psmain.startColor = assignableColours[1];
+            //}
+            //else
+            //{
+            //    psmain.startColor = assignableColours[2];
+            //}
+
+        }
+    }
+
+    private void AddParticlesToEffectCircle(int category, int amount)
+    {
+        ParticleSystem ps = effectCircle.GetComponent<ParticleSystem>();
+        var emis = ps.emission;
+        var rot = emis.rateOverTime;
+        rot.constant += amount;
+        emis.rateOverTime = rot;
     }
 }
