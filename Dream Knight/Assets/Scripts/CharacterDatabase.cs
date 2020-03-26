@@ -6,28 +6,28 @@ using LitJson;
 using System.Collections.Generic;
 using System.IO;
 
-public class EnemyDatabase : MonoBehaviour {
-	private List<Enemy> database = new List<Enemy>();
-	private JsonData enemyData;
+public class CharacterDatabase : MonoBehaviour {
+	private List<Character> database = new List<Character>();
+	private JsonData characterData;
 
 	void Start()
 	{
-        enemyData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Enemies.json"));
-		ConstructEnemyDatabase();	
+        characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
+		ConstructCharacterDatabase();	
 
        //DEMO 
-       Debug.Log("My enemies:");
-       foreach(Enemy i in database)
+       Debug.Log("My characters:");
+       foreach(Character i in database)
        {
-           Debug.Log(i.Title);
+           Debug.Log(i.title);
        } 
 	}
 
-	public Enemy FetchEnemyById(int id)
+	public Character FetchCharacterById(int id)
 	{
 		for (int i = 0; i < database.Count; i++)
 		{
-			if (database[i].Id == id)
+			if (database[i].id == id)
 			{
 				return database[i];
 			}
@@ -36,14 +36,14 @@ public class EnemyDatabase : MonoBehaviour {
 		return null;
 	}
 	
-	void ConstructEnemyDatabase()
+	void ConstructCharacterDatabase()
 	{
-		for (int i = 0; i < enemyData.Count; i++)
+		for (int i = 0; i < characterData.Count; i++)
 		{
-			Enemy newEnemy = new Enemy();
-            // Set Enemy attributes
-			newEnemy.Id = (int)enemyData[i]["id"];
-            newEnemy.Title = enemyData[i]["title"].ToString();
+			Character newCharacter = new Character();
+            // Set Character attributes
+			newCharacter.id = (int)characterData[i]["id"];
+            newCharacter.title = characterData[i]["title"].ToString();
 			// newItem.Title = itemData[i]["title"].ToString();
 			// newItem.Value = (int)itemData[i]["value"];
 			// newItem.Power = (int)itemData[i]["stats"]["power"];
@@ -55,15 +55,17 @@ public class EnemyDatabase : MonoBehaviour {
 			// newItem.Slug = itemData[i]["slug"].ToString();
 			//newItem.Sprite = Resources.Load<Sprite>("Sprites/Items/" + newItem.Slug);
 
-			database.Add(newEnemy);
+			database.Add(newCharacter);
 		}
 	}
 }
 
-public class Enemy
+public class Enemy : Character
 {
-	public int Id { get; set; }
-	public string Title { get; set; }
+	public int id { get; set; }
+	public string title { get; set; }
+
+
 	// public int Value { get; set; }
 	// public int Power { get; set; }
 	// public int Defense { get; set; }
@@ -76,6 +78,6 @@ public class Enemy
 
 	public Enemy()
 	{
-		this.Id = -1;
+		this.id = -1;
 	}
 }
