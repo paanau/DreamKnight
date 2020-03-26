@@ -41,6 +41,36 @@ public class CharacterControl : MonoBehaviour
         damageModifiers = 1;
     }
 
+/*
+    public void SpawnCharacter()
+    {
+        // Defaults
+        isAlive = true;
+        inCombat = false;
+        waiting = false;
+        myAnimator = GetComponent<Animator>();
+        myAnimator.speed = 1;
+        gameRunSpeed = 1;
+
+        // Dependent on character specs
+        baseMaxHP = 1000;
+        currentHP = baseMaxHP;
+        baseDamage = 30;
+        baseSpeed = 1;
+        range = 2f;
+        attackCooldown = 1f;
+        directionModifier = -1;
+        if (isPlayer)
+        {
+            baseDamage = 100;
+            attackCooldown = 0.6f;
+            directionModifier = 1;
+        }
+        
+        speedModifiers = 1;
+        damageModifiers = 1;
+    }
+*/
     // Update is called once per frame
     void Update()
     {
@@ -108,7 +138,8 @@ public class CharacterControl : MonoBehaviour
         currentHP -= damage;
         if (currentHP <= 0)
         {
-            transform.Rotate(0, 0, -90);
+            // Death happens here
+            // transform.Rotate(0, 0, -90);
             inCombat = false;
             return false;
         }
@@ -152,6 +183,11 @@ public class CharacterControl : MonoBehaviour
     public bool IsAlive()
     {
         return isAlive;
+    }
+
+    public void SetAlive(bool alive)
+    {
+        isAlive = alive;
     }
 
     public bool IsNotInCombat()
