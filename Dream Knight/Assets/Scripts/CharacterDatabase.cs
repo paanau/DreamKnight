@@ -81,3 +81,17 @@ public class Enemy : Character
 		this.id = -1;
 	}
 }
+
+public class Player : Character
+{
+	public int id { get; set; }
+	public string title { get; set; }
+
+	public Player()
+	{
+		this.id = -1;
+		this.baseDamage = 100;
+		this.attackCooldown = 0.6f;
+		this.directionModifier = 1;
+	}
+}

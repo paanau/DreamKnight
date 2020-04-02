@@ -1,0 +1,10 @@
+For refactoring of the character controller
+
+Create a character class which contains all the properties shared by:
+- player
+- enemies
+- bosses
+
+Create the subclasses for each of the above 
+
+Make sure the character methods in the CharacterControl class work exactly as intended 
