@@ -8,9 +8,9 @@ public class GameController : MonoBehaviour
 {
     private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
     private bool chargeButton, slowdownActive;
-    public int chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
+    public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
-    public GameObject playerCharacter, mainCamera;
+    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
@@ -73,7 +73,7 @@ public class GameController : MonoBehaviour
                 {
                     if (chargeEnergy > 0)
                     {
-                        chargeEnergy -= playerDepleteRate;
+                        chargeEnergy -= playerDepleteRate * gameRunSpeed;
                         PlayerRush();
                     }
                     else
@@ -146,8 +146,8 @@ public class GameController : MonoBehaviour
                 currentMeleeTargetController.LostCombat();
                 targetAttackCooldown = 999f;
             }
-            playerAttackCooldown += playerController.GetCooldown();
-            currentMeleeTargetController.TriggerBloodEffect();
+            playerAttackCooldown += playerController.GetCooldown() * gameRunSpeed;
+            currentMeleeTargetController.TriggerBloodEffect(Mathf.FloorToInt(playerController.DamageDealt() * rushDamageBoost), gameRunSpeed);
         }
 
         if (targetAttackCooldown <= 0)
@@ -159,8 +159,8 @@ public class GameController : MonoBehaviour
                 currentMeleeTargetController.WonCombat();
                 PlayerDied();
             }
-            targetAttackCooldown += currentMeleeTargetController.GetCooldown();
-            playerController.TriggerBloodEffect();
+            targetAttackCooldown += currentMeleeTargetController.GetCooldown() * gameRunSpeed;
+            playerController.TriggerBloodEffect(currentMeleeTargetController.DamageDealt(), gameRunSpeed);
         }
     }
 
@@ -187,14 +187,7 @@ public class GameController : MonoBehaviour
     private void ChangeTurns()
     {
         gameRunSpeed = 1;
-        if (playerTurn && !firstTurn)
-        {
-            gameRunSpeed = 0;
-        }
-        playerController.SetMyTurn(playerTurn);
-        playerController.SetAnimationSpeed(gameRunSpeed);
-        ActivateEnemies();
-        ActivateProjectiles();
+        ChangeSpeeds();
         firstTurn = false;
     }
 
@@ -261,6 +254,9 @@ public class GameController : MonoBehaviour
                     Debug.Log("Pew!");
                 }
             }
+            slowdownActive = false;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(false);
         }
     }
 
@@ -317,7 +313,7 @@ public class GameController : MonoBehaviour
     {
         if (!inCombat)
         {
-            playerController.AdvanceMe(rushSpeedBoost * chargeEnergy / maxEnergy);
+            playerController.AdvanceMe(gameRunSpeed * (rushSpeedBoost * chargeEnergy / maxEnergy));
 
             if (playerCharacter.transform.position.x >= mainCamera.transform.position.x - 3)
             {
@@ -338,14 +334,14 @@ public class GameController : MonoBehaviour
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             if (ec.CanAdvance())
             {
-                ec.AdvanceMe(1);
+                ec.AdvanceMe(gameRunSpeed);
             }
             if (ec.CanFight())
             {
                 DoCombat();
             }
         }
-        enemyEnergy -= enemyDepleteRate;
+        enemyEnergy -= enemyDepleteRate * gameRunSpeed;
     }
 
     public List<GameObject> GetEnemies()
@@ -355,12 +351,34 @@ public class GameController : MonoBehaviour
 
     private void PauseForAbility()
     {
-
+        if (!slowdownActive && chargeButton)
+        {
+            slowdownActive = true;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(true);
+        }
+        else if (slowdownActive && chargeButton)
+        {
+            slowdownActive = false;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(false);
+        }
     }
 
     private void PauseForItem()
     {
-
+        if (!slowdownActive && chargeButton)
+        {
+            slowdownActive = true;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(true);
+        }
+        else if (slowdownActive && chargeButton)
+        {
+            slowdownActive = false;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(false);
+        }
     }
 
     private void ActivateEnemies()
@@ -383,5 +401,30 @@ public class GameController : MonoBehaviour
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.SetAnimationSpeed(gameRunSpeed);
         }
+    }
+
+    private void ChangeSpeeds()
+    {
+        if (slowdownActive)
+        {
+            gameRunSpeed = 0.05f;
+        }
+        else
+        {
+            gameRunSpeed = 1;
+        }
+        if (playerTurn && !firstTurn && !chargeActive)
+        {
+            gameRunSpeed = 0;
+        }
+        ActivateEnemies();
+        ActivateProjectiles();
+        playerController.SetMyTurn(playerTurn);
+        playerController.SetAnimationSpeed(gameRunSpeed);
+    }
+
+    private void TogglePauseSelectionUI(bool newState)
+    {
+        pauseSelectionUI.GetComponent<Canvas>().enabled = newState;
     }
 }
