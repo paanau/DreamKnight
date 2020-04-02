@@ -40,6 +40,7 @@ public class CharacterControl : MonoBehaviour
         gameRunSpeed = 1;
         speedModifiers = 1;
         damageModifiers = 1;
+        InitialiseHealthbars();
     }
 
 /*
@@ -131,10 +132,7 @@ public class CharacterControl : MonoBehaviour
                 damage -= Mathf.FloorToInt(shieldHealth);
                 shieldHealth = 0;
             }
-            if (shieldHealth < baseMaxHP)
-            {
-                
-            }
+            SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
         }
 
         if (damage > baseMaxHP)
@@ -142,6 +140,8 @@ public class CharacterControl : MonoBehaviour
             CriticalDeath();
         }
         currentHP -= damage;
+        SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
+        SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
         if (currentHP <= 0)
         {
             // Death happens here
@@ -279,6 +279,7 @@ public class CharacterControl : MonoBehaviour
         {
             shieldHealth += 100;
             AddParticlesToEffectCircle(1, 20);
+            SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
         }
         if (s == "d")
         {
@@ -395,6 +396,7 @@ public class CharacterControl : MonoBehaviour
             if (bar.name == name)
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
+                Debug.Log("Calling healthbar: " + bar.name);
             }
         }
     }
