@@ -9,10 +9,11 @@ public class CharacterControl : MonoBehaviour
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
     [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
-    private bool inCombat, isAlive, waiting, myTurn;
-    [SerializeField] private int currentHP, baseMaxHP, baseDamage, shieldHealth;
+    [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
+    [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
-    [SerializeField] private GameObject fireB, effectCircle;
+    [SerializeField] private GameObject fireB, effectCircle, healthBar;
+    private GameObject[] healthbarComponents;
     private int directionModifier;
 
     // Start is called before the first frame update
@@ -76,9 +77,10 @@ public class CharacterControl : MonoBehaviour
     {
         if (myTurn && isAlive && !inCombat)
         {
-            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), 0), -Vector2.up);
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
             if (hit.collider != null && hit.collider.gameObject != gameObject)
             {
+                Debug.Log(hit.collider.gameObject.name);
                 if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
                 {
                     waiting = true;
@@ -126,8 +128,12 @@ public class CharacterControl : MonoBehaviour
             }
             else
             {
-                damage -= shieldHealth;
+                damage -= Mathf.FloorToInt(shieldHealth);
                 shieldHealth = 0;
+            }
+            if (shieldHealth < baseMaxHP)
+            {
+                
             }
         }
 
@@ -175,9 +181,14 @@ public class CharacterControl : MonoBehaviour
         return attackCooldown;
     }
 
-    public void TriggerBloodEffect()
+    public void TriggerBloodEffect(float damage, float runSpeed)
     {
-        GetComponent<ParticleSystem>().Play();
+        ParticleSystem myBloodLoss = GetComponent<ParticleSystem>();
+        var em = myBloodLoss.emission;
+        em.rateOverTimeMultiplier = 5 * damage;
+        var main = myBloodLoss.main;
+        main.simulationSpeed = runSpeed;
+        myBloodLoss.Play();
     }
 
     public bool IsAlive()
@@ -245,6 +256,9 @@ public class CharacterControl : MonoBehaviour
     {
         myAnimator.speed = newSpeed * speedModifiers;
         gameRunSpeed = newSpeed * speedModifiers;
+        ParticleSystem myBloodLoss = GetComponent<ParticleSystem>();
+        var main = myBloodLoss.main;
+        main.simulationSpeed = newSpeed;
     }
 
     public void UseAbility(string s)
@@ -363,5 +377,25 @@ public class CharacterControl : MonoBehaviour
         var rot = emis.rateOverTime;
         rot.constant += amount;
         emis.rateOverTime = rot;
+    }
+
+    private void InitialiseHealthbars()
+    {
+        healthbarComponents = new GameObject[healthBar.transform.childCount];
+        for (int i = 0; i < healthBar.transform.childCount; i++)
+        {
+            healthbarComponents[i] = healthBar.transform.GetChild(i).gameObject;
+        }
+    }
+
+    private void SetHealthBar(string name, float newValue, float speed)
+    {
+        foreach (GameObject bar in healthbarComponents)
+        {
+            if (bar.name == name)
+            {
+                bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
+            }
+        }
     }
 }
