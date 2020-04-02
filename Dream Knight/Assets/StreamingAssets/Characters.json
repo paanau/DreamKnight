@@ -1,7 +1,12 @@
 [
 	{
 		"id": 0,
-        "title": "Chocolate Horlox"
+        "title": "Dream Knight",
+        "baseDamage": 100,
+        "attackCoolDown": 0.6,
+        "directionModifier": 1,
+        "myTurn": true
+
     },
     {
         "id": 1,

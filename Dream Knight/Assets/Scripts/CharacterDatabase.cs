@@ -44,54 +44,83 @@ public class CharacterDatabase : MonoBehaviour {
             // Set Character attributes
 			newCharacter.id = (int)characterData[i]["id"];
             newCharacter.title = characterData[i]["title"].ToString();
-			// newItem.Title = itemData[i]["title"].ToString();
-			// newItem.Value = (int)itemData[i]["value"];
-			// newItem.Power = (int)itemData[i]["stats"]["power"];
-			// newItem.Defense = (int)itemData[i]["stats"]["defense"];
-			// newItem.Vitality = (int)itemData[i]["stats"]["vitality"];
-			// newItem.Description = itemData[i]["description"].ToString();
-			// newItem.Stackable = (bool)itemData[i]["stackable"];
-			// newItem.Rarity = (int)itemData[i]["rarity"];
-			// newItem.Slug = itemData[i]["slug"].ToString();
-			//newItem.Sprite = Resources.Load<Sprite>("Sprites/Items/" + newItem.Slug);
-
+			try	{
+				newCharacter.isAlive = (bool)characterData[i]["isAlive"];
+			} catch {};
+			try {
+			newCharacter.isPrivate = (bool)characterData[i]["isPrivate"];
+			} catch {};
+			try {
+			newCharacter.inCombat = (bool)characterData[i]["isInCombat"];
+			} catch {};
+			try {
+			newCharacter.myTurn = (bool)characterData[i]["isMyTurn"];
+			} catch {};
+			try {
+			newCharacter.baseMaxHP = (float)characterData[i]["baseMaxHP"];
+			} catch {};
+			try {
+			newCharacter.currentHP = (float)characterData[i]["currentHP"];
+			} catch {};
+			try {
+			newCharacter.shieldHealth = (float)characterData[i]["shieldHealth"];
+			} catch {};
+			try {
+			newCharacter.baseDamage = (float)characterData[i]["baseDamage"];
+			} catch {};
+			try {
+			newCharacter.baseSpeed = (float)characterData[i]["baseSpeed"];
+			} catch {};
+			try {
+			newCharacter.range = (float)characterData[i]["range"];
+			} catch {};
+			try {
+			newCharacter.attackCooldown = (float)characterData[i]["attackCooldown"];
+			} catch {};
+			try {
+			newCharacter.directionModifier = (int)characterData[i]["directionModifier"];
+			} catch {};
+			//newCharacter.myAnimator = (Animator)characterData[i]["myAnimator"];
+			//newCharacter.myAnimator.speed = (float)characterData[i]["myTurn"];
+			try {
+			newCharacter.gameRunSpeed = (float)characterData[i]["gameRunSpeed"];
+			} catch {};
+			try {
+				newCharacter.speedModifiers = (float)characterData[i]["speedModifiers"];
+			} catch {};
+			try {
+			newCharacter.damageModifiers = (float)characterData[i]["damageModifiers"];
+			} catch {};
 			database.Add(newCharacter);
 		}
 	}
 }
 
-public class Enemy : Character
-{
-	public int id { get; set; }
-	public string title { get; set; }
+// public class Enemy : Character
+// {
+// 	public int id { get; set; }
+// 	public string title { get; set; }
 
 
-	// public int Value { get; set; }
-	// public int Power { get; set; }
-	// public int Defense { get; set; }
-	// public int Vitality { get; set; }
-	// public string Description { get; set; }
-	// public bool Stackable { get; set; }
-	// public int Rarity { get; set; }
-	// public string Slug { get; set; }
-	// public Sprite Sprite { get; set; }
+// 	// public int Value { get; set; }
 
-	public Enemy()
-	{
-		this.id = -1;
-	}
-}
 
-public class Player : Character
-{
-	public int id { get; set; }
-	public string title { get; set; }
+// 	public Enemy()
+// 	{
+// 		this.id = -1;
+// 	}
+// }
 
-	public Player()
-	{
-		this.id = -1;
-		this.baseDamage = 100;
-		this.attackCooldown = 0.6f;
-		this.directionModifier = 1;
-	}
-}
+// public class Player : Character
+// {
+// 	public int id { get; set; }
+// 	public string title { get; set; }
+
+// 	public Player()
+// 	{
+// 		this.id = -1;
+// 		this.baseDamage = 100;
+// 		this.attackCooldown = 0.6f;
+// 		this.directionModifier = 1;
+// 	}
+// }
