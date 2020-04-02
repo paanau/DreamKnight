@@ -390,6 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd5ad92733239e540ad63d076069e90f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  charTypeID: 1
   range: 0
   attackCooldown: 0
   gameRunSpeed: 0

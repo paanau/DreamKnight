@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+public class Character
 {
     // Character is the top class; the player, enemies, bosses, are child classes
 

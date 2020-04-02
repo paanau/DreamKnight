@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     private bool chargeButton, slowdownActive;
     public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
-    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI;
+    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
@@ -18,6 +18,8 @@ public class GameController : MonoBehaviour
 
 
     void Awake(){
+
+        SpawnCharacters();
 
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
@@ -32,6 +34,11 @@ public class GameController : MonoBehaviour
             return (a.transform.position.x).CompareTo(b.transform.position.x);
             });
         }
+
+        playerController = playerCharacter.GetComponent<CharacterControl>();
+        playerController.SetGameController(gameObject);
+
+        StartPlayerTurn();
     }
     // Start is called before the first frame update
     void Start()
@@ -50,12 +57,7 @@ public class GameController : MonoBehaviour
         playerChargeRate = 100;
         playerDepleteRate = 10;
         enemyDepleteRate = 20;
-        playerController = playerCharacter.GetComponent<CharacterControl>();
-        playerController.SetGameController(gameObject);
         gameRunSpeed = 1f;
-
-
-        StartPlayerTurn();
     }
 
     // Update is called once per frame
@@ -96,6 +98,14 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void SpawnCharacters()
+    {
+        for (int i = 1; i < 10; i++)
+        {
+            GameObject newEnemy = Instantiate(enemyPrefab, new Vector3(i*15, 0, 0), Quaternion.identity);
+        }
+    }
+
     public void InitiateCombat(GameObject attacker, GameObject target)
     {
         if (target == playerCharacter)
@@ -124,7 +134,7 @@ public class GameController : MonoBehaviour
 
     private void ActivateWaitingEnemies()
     {
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemy in enemies)
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             if (ec.IsAlive() && ec.IsNotInCombat())
@@ -329,7 +339,7 @@ public class GameController : MonoBehaviour
 
     private void EnemiesAct()
     {
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemy in enemies)
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             if (ec.CanAdvance())
@@ -383,7 +393,7 @@ public class GameController : MonoBehaviour
 
     private void ActivateEnemies()
     {
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemy in enemies)
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             ec.SetAnimationSpeed(gameRunSpeed);
@@ -419,6 +429,11 @@ public class GameController : MonoBehaviour
         }
         ActivateEnemies();
         ActivateProjectiles();
+        if (playerController == null)
+        {
+            playerController = playerCharacter.GetComponent<CharacterControl>();
+            playerController.SetGameController(gameObject);
+        }
         playerController.SetMyTurn(playerTurn);
         playerController.SetAnimationSpeed(gameRunSpeed);
     }

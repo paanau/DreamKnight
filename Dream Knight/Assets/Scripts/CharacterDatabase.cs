@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine;
 using LitJson;
-using System.Collections.Generic;
 using System.IO;
 
 public class CharacterDatabase : MonoBehaviour {
