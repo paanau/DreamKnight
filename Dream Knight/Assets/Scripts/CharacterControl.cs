@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterControl : MonoBehaviour
 {
+    public int charTypeID = 0;
+    public Character character = null;
     private GameObject gameController;
     private Animator myAnimator;
     private GameController main;
@@ -19,60 +21,38 @@ public class CharacterControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isAlive = true;
-        baseMaxHP = 1000;
-        currentHP = baseMaxHP;
-        baseDamage = 30;
-        baseSpeed = 1;
-        inCombat = false;
-        waiting = false;
-        range = 2f;
-        attackCooldown = 1f;
-        directionModifier = -1;
-        if (isPlayer)
-        {
-            baseDamage = 100;
-            attackCooldown = 0.6f;
-            directionModifier = 1;
-        }
-        myAnimator = GetComponent<Animator>();
-        myAnimator.speed = 1;
-        gameRunSpeed = 1;
-        speedModifiers = 1;
-        damageModifiers = 1;
-        InitialiseHealthbars();
+        spawnCharacter(charTypeID);
     }
 
-/*
-    public void SpawnCharacter()
+    public void spawnCharacter(int typeID)
     {
-        // Defaults
-        isAlive = true;
-        inCombat = false;
-        waiting = false;
+    // Initialize character
+        try {
+            character = GameObject.Find("GameController").GetComponent<CharacterDatabase>().FetchCharacterById(typeID);
+            Debug.Log(character.myTurn);
+        }
+        catch {
+            Debug.Log("Character with id " + " not found!");
+        }
+
+        isAlive = character.isAlive;
+        baseMaxHP = character.baseMaxHP;
+        currentHP = character.currentHP;
+        baseDamage = character.baseDamage;
+        baseSpeed = character.baseSpeed;
+        inCombat = character.inCombat;
+        waiting = character.waiting;
+        range = character.range;
+        attackCooldown = character.attackCooldown;
+        directionModifier = character.directionModifier;
         myAnimator = GetComponent<Animator>();
         myAnimator.speed = 1;
-        gameRunSpeed = 1;
+        gameRunSpeed = character.gameRunSpeed;
+        speedModifiers = character.speedModifiers;
+        damageModifiers = character.damageModifiers;
 
-        // Dependent on character specs
-        baseMaxHP = 1000;
-        currentHP = baseMaxHP;
-        baseDamage = 30;
-        baseSpeed = 1;
-        range = 2f;
-        attackCooldown = 1f;
-        directionModifier = -1;
-        if (isPlayer)
-        {
-            baseDamage = 100;
-            attackCooldown = 0.6f;
-            directionModifier = 1;
-        }
-        
-        speedModifiers = 1;
-        damageModifiers = 1;
     }
-*/
+
     // Update is called once per frame
     void Update()
     {
@@ -396,7 +376,6 @@ public class CharacterControl : MonoBehaviour
             if (bar.name == name)
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
-                Debug.Log("Calling healthbar: " + bar.name);
             }
         }
     }

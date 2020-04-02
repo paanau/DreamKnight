@@ -19,7 +19,7 @@ public class ItemDatabase : MonoBehaviour {
        Debug.Log("My inventory:");
        foreach(Item i in database)
        {
-           Debug.Log(i.Title);
+	           Debug.Log(i.Title);
        } 
 	}
 
