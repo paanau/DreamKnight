@@ -10,11 +10,12 @@ public class CharacterControl : MonoBehaviour
     private Animator myAnimator;
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
+    private List<Ability> myAbilities = new List<Ability>();
     [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
-    [SerializeField] private GameObject fireB, effectCircle, healthBar;
+    [SerializeField] private GameObject projectilePrefab, effectCircle, healthBar;
     private GameObject[] healthbarComponents;
     private int directionModifier;
 
@@ -48,6 +49,21 @@ public class CharacterControl : MonoBehaviour
         gameRunSpeed = character.gameRunSpeed;
         speedModifiers = character.speedModifiers;
         damageModifiers = character.damageModifiers;
+
+        InitialiseAbilities(typeID);
+    }
+
+    public void InitialiseAbilities(int charID)
+    {
+        AbilityDatabase adb = GameObject.Find("GameController").GetComponent<AbilityDatabase>();
+
+        if (charID == 0)
+        {
+            myAbilities.Add(adb.FetchAbilityByType("Ranged"));
+            myAbilities.Add(adb.FetchAbilityByType("Offense"));
+            myAbilities.Add(adb.FetchAbilityByType("Defense"));
+            myAbilities.Add(adb.FetchAbilityByType("Misc"));
+        }
     }
 
     // Update is called once per frame
@@ -240,12 +256,12 @@ public class CharacterControl : MonoBehaviour
         main.simulationSpeed = newSpeed;
     }
 
-    public void UseAbility(string s)
+    public float UseAbility(string s)
     {
         if (s == "w")
         {
-            GameObject fb = Instantiate(fireB, transform.position, Quaternion.identity);
-            ProjectileScript ps = fb.GetComponent<ProjectileScript>();
+            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.GiveSettings((1 + myAnimator.speed) * 0.1f, 10, 100);
             ps.SetAnimationSpeed(gameRunSpeed);
         }
@@ -265,6 +281,13 @@ public class CharacterControl : MonoBehaviour
             damageModifiers += 10;
             //AddParticlesToEffectCircle(2, 20);
         }
+        return 1;
+    }
+
+    private Ability SelectAbility(string s)
+    {
+
+        return new Ability();
     }
 
     private void ManageAbilities()

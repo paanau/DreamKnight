@@ -1,0 +1,71 @@
+[
+	{
+		"id": 0,
+		"title": "None",
+		"type": "None"
+	},
+	{
+		"id": 1,
+        "title": "Fire Bolt",
+		"type": "Ranged",
+		"target": "closest",
+        "damage": 100,
+		"element": "fire",
+		"offensive": true,
+		"procChance": 20,
+		"procEffect": 1000,
+		"procStrength": -50,
+		"procDuration": 5,
+		"procInterval": 0.5,
+		"procDurationType": "time",
+        "range": 10,
+        "speed": 1,
+
+    },
+    {
+        "id": 2,
+        "title": "Magic Shield",
+		"type": "Defense",
+		"target": "self",
+		"buff": true,
+		"buffTarget": "shield",
+		"buffType": "add",
+		"flatStrength": 100,
+		"duration": 0,
+		"durationType": "instantaneous"
+    },
+    {
+        "id": 3,
+        "title": "Smash",
+		"type": "Offense",
+		"target": "self",
+		"buff": true,
+		"buffTarget": "damage",
+		"buffType": "multi",
+		"multiStrength": 3,
+		"duration": 3,
+		"durationType": "use"
+    },
+	{
+		"id": 4,
+		"title": "Dodge",
+		"type": "Misc",
+		"target": "self",
+		"buff": true,
+		"buffTarget": "defense",
+		"buffType": "mixed",
+		"flatStrength": 10,
+		"multiStrength": 2,
+		"duration": 10,
+		"durationType": "time"
+	},
+	{
+		"id": 1000,
+		"title": "Burn",
+		"type": "Effect",
+		"target": "self",
+		"buff": true,
+		"buffTarget": "health",
+		"buffType": "add"
+	}
+]
