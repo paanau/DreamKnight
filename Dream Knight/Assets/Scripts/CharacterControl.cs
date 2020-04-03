@@ -26,9 +26,13 @@ public class CharacterControl : MonoBehaviour
         SpawnCharacter(charTypeID);
     }
 
-    public void SpawnCharacter(int typeID)
+    public void SpawnCharacter(int typeID, float xPos = 20)
     {
     // Initialize character
+
+    // Set position
+
+    // Load abilities from the database
         try {
             character = GameObject.Find("GameController").GetComponent<CharacterDatabase>().FetchCharacterById(typeID);
             Debug.Log(character.title + "'s turn: " + character.myTurn);

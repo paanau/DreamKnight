@@ -67,10 +67,11 @@ public class LevelController : MonoBehaviour
                 {
                     xPos = player.transform.position.x + mapBuffer;
                 }
-
-                enemy.transform.position = new Vector2(xPos + Random.Range(4.0f, 8.0f), enemy.transform.position.y);
+                xPos = xPos + Random.Range(4.0f, 8.0f);
+                enemy.GetComponent<CharacterControl>().SpawnCharacter(1, xPos);
+                //enemy.transform.position = new Vector2( enemy.transform.position.y);
                 // Reactivate enemy 
-                enemy.GetComponent<CharacterControl>().SetAlive(true);
+                //enemy.GetComponent<CharacterControl>().SetAlive(true);
 
             }
         }
