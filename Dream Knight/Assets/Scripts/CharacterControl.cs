@@ -262,36 +262,42 @@ public class CharacterControl : MonoBehaviour
 
     public float UseAbility(string s)
     {
+        Ability ab = SelectAbility(s);
         if (s == "w")
         {
             GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.GiveSettings((1 + myAnimator.speed) * 0.1f, 10, 100);
             ps.SetAnimationSpeed(gameRunSpeed);
+            return ab.energyCost;
         }
-        if (s == "s")
-        {
-            speedModifiers += 2;
-            //AddParticlesToEffectCircle(0, 20);
-        }
-        if (s == "a")
-        {
-            shieldHealth += 100;
-            //AddParticlesToEffectCircle(1, 20);
-            SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
-        }
-        if (s == "d")
-        {
-            damageModifiers += 10;
-            //AddParticlesToEffectCircle(2, 20);
-        }
+
+        
         return 1;
     }
 
     private Ability SelectAbility(string s)
     {
+        if (myAbilities.Count > 0)
+        {
+            switch (s)
+            {
+                case "w":
+                    return myAbilities.Find(a => a.type == "Ranged");
+                case "a":
+                    return myAbilities.Find(a => a.type == "Defense");
+                case "s":
+                    return myAbilities.Find(a => a.type == "Misc");
+                case "d":
+                    return myAbilities.Find(a => a.type == "Offense");
+            }
 
-        return new Ability();
+            return new Ability();
+        }
+        else
+        {
+            return new Ability();
+        }
     }
 
     private void ManageAbilities()

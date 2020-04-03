@@ -10,7 +10,7 @@ public class AbilityDatabase : MonoBehaviour
     private JsonData abilityData;
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         abilityData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Abilities.json"));
         ConstructAbilityDatabase();

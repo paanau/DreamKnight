@@ -235,18 +235,19 @@ public class GameController : MonoBehaviour
 
     private void UseAbility(Vector2 direction)
     {
+        float energyCost = 0;
         if (direction != Vector2.zero)
         {
             if (direction.x != 0)
             {
                 if (direction.x < 0)
                 {
-                    playerController.UseAbility("a");
+                    energyCost = playerController.UseAbility("a");
                     // Defense
                 }
                 else
                 {
-                    playerController.UseAbility("d");
+                    energyCost = playerController.UseAbility("d");
                     // Melee attack
                 }
             }
@@ -254,13 +255,13 @@ public class GameController : MonoBehaviour
             {
                 if (direction.y < 0)
                 {
-                    playerController.UseAbility("s");
+                    energyCost = playerController.UseAbility("s");
                     // Vehicle
                 }
                 else
                 {
                     // Ranged attack
-                    playerController.UseAbility("w");
+                    energyCost = playerController.UseAbility("w");
                     Debug.Log("Pew!");
                 }
             }
@@ -268,6 +269,7 @@ public class GameController : MonoBehaviour
             ChangeSpeeds();
             TogglePauseSelectionUI(false);
         }
+        chargeEnergy -= energyCost;
     }
 
     private void UseItem(Vector2 direction)
