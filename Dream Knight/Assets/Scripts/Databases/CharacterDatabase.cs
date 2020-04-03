@@ -8,7 +8,7 @@ public class CharacterDatabase : MonoBehaviour {
 	private List<Character> database = new List<Character>();
 	private JsonData characterData;
 
-	void Start()
+	void Awake()
 	{
         characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
 		ConstructCharacterDatabase();	
