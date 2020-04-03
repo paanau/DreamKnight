@@ -15,6 +15,7 @@ public class Ability
     
     public bool buff { get; set; } // Is ability a buff for the user?
 
+    public float energyCost { get; set; } // Energy cost of ability.
     public float damage { get; set; } // Damage dealt to target.
     public float procChance { get; set; } // Chance of causing an additional effect on the target.
     public float procDuration { get; set; } // Duration of additional effect.
@@ -32,9 +33,5 @@ public class Ability
     public Ability()
     {
 
-    }
-    public Ability(int i)
-    {
-        id = i;
     }
 }

@@ -406,7 +406,8 @@ MonoBehaviour:
   baseDamage: 0
   shieldHealth: 0
   isPlayer: 0
-  fireB: {fileID: 0}
+  projectilePrefab: {fileID: 1589657863535395054, guid: 490513923fec4f74a9540cc1f96fd5e9,
+    type: 3}
   effectCircle: {fileID: 0}
   healthBar: {fileID: 1103086064002699342}
 --- !u!61 &4749821695297356600
