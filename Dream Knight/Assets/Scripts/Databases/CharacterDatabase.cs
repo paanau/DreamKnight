@@ -14,10 +14,10 @@ public class CharacterDatabase : MonoBehaviour {
 		ConstructCharacterDatabase();	
 
        //DEMO 
-       Debug.Log("My characters:");
+       //Debug.Log("My characters:");
        foreach(Character i in database)
        {
-           Debug.Log(i.title);
+           //Debug.Log(i.title);
        } 
 	}
 

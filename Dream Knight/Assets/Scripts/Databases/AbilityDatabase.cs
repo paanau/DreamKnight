@@ -16,10 +16,10 @@ public class AbilityDatabase : MonoBehaviour
         ConstructAbilityDatabase();
 
         //DEMO 
-        Debug.Log("My abilities:");
+        //Debug.Log("My abilities:");
         foreach (Ability i in database)
         {
-            Debug.Log(i.title);
+            //Debug.Log(i.title);
         }
     }
 
@@ -93,7 +93,12 @@ public class AbilityDatabase : MonoBehaviour
             catch { };
             try
             {
-                newAbility.damage = (float)abilityData[i]["damage"];
+                newAbility.energyCost = (float)abilityData[i]["energyCost"];
+            }
+            catch { };
+            try
+            {
+                newAbility.strength = (float)abilityData[i]["strength"];
             }
             catch { };
             try
@@ -123,6 +128,11 @@ public class AbilityDatabase : MonoBehaviour
             catch { };
             try
             {
+                newAbility.baseInterval = (float)abilityData[i]["interval"];
+            }
+            catch { };
+            try
+            {
                 newAbility.speed = (float)abilityData[i]["speed"];
             }
             catch { };
@@ -131,15 +141,9 @@ public class AbilityDatabase : MonoBehaviour
                 newAbility.range = (float)abilityData[i]["range"];
             }
             catch { };
-            
             try
             {
-                newAbility.flatStrength = (float)abilityData[i]["flatStrength"];
-            }
-            catch { };
-            try
-            {
-                newAbility.multiStrength = (float)abilityData[i]["multiStrength"];
+                newAbility.multi = (float)abilityData[i]["multi"];
             }
             catch { };
             try

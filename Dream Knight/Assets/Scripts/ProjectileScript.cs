@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ProjectileScript : MonoBehaviour
 {
-    [SerializeField] private float mySpeed, myRange, gameRunSpeed;
-    [SerializeField] private int myDamage;
+    [SerializeField] private float gameRunSpeed;
     private Animator myAnimator;
+    private Ability myAbility;
 
     // Start is called before the first frame update
     void Awake()
@@ -17,10 +17,9 @@ public class ProjectileScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (myRange > 0)
+        if (myAbility.range >= 0)
         {
-            transform.Translate(new Vector2(mySpeed * gameRunSpeed, 0));
-
+            transform.Translate(new Vector2(myAbility.speed * gameRunSpeed, 0));
             RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, 0), -Vector2.up);
             if (hit.collider != null && hit.collider.gameObject != gameObject)
             {
@@ -29,7 +28,7 @@ public class ProjectileScript : MonoBehaviour
                     HitTarget(hit.collider.gameObject);
                 }
             }
-            myRange -= Time.deltaTime * gameRunSpeed;
+            myAbility.range -= Time.deltaTime * gameRunSpeed;
         }
         else
         {
@@ -37,18 +36,25 @@ public class ProjectileScript : MonoBehaviour
         }
     }
 
-    public void GiveSettings(float speed, float range, int damage)
+    public void GiveSettings(Ability whatAmI)
     {
-        mySpeed = speed;
-        myRange = range;
-        myDamage = damage;
+        myAbility = whatAmI;
         myAnimator = GetComponent<Animator>();
     }
 
     private void HitTarget(GameObject go)
     {
         CharacterControl targetCC = go.GetComponent<CharacterControl>();
-        targetCC.DamageTaken(myDamage);
+        targetCC.DamageTaken((int)myAbility.strength);
+        if (Random.Range(0f, 100f) < myAbility.procChance)
+        {
+            Ability procEffect = GameObject.Find("GameController").GetComponent<AbilityDatabase>().FetchAbilityById(myAbility.procEffect);
+            procEffect.duration = myAbility.procDuration;
+            procEffect.interval = myAbility.procInterval;
+            procEffect.baseInterval = myAbility.procInterval;
+            procEffect.strength = myAbility.procStrength;
+            targetCC.ApplyEffect(procEffect);
+        }
         RemoveMe();
     }
 
@@ -61,7 +67,7 @@ public class ProjectileScript : MonoBehaviour
     private void RemoveMe()
     {
         myAnimator.Play("FireboltHit");
-        myRange = 0;
+        myAbility.range = -1;
     }
 
     public void FinishMe()

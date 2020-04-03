@@ -16,16 +16,16 @@ public class Ability
     public bool buff { get; set; } // Is ability a buff for the user?
 
     public float energyCost { get; set; } // Energy cost of ability.
-    public float damage { get; set; } // Damage dealt to target.
+    public float strength { get; set; } // Strength of the ability, i.e. damage dealt to target.
     public float procChance { get; set; } // Chance of causing an additional effect on the target.
     public float procDuration { get; set; } // Duration of additional effect.
     public float procStrength { get; set; } // Strength of additional effect.
     public float procInterval { get; set; } // Interval between ticks of additional effect.
     public float interval { get; set; } // Interval between ticks of ability.
+    public float baseInterval { get; set; }
     public float speed { get; set; } // Speed at which ability (generally the projectile) moves.
     public float range { get; set; } // Range of ability.
-    public float flatStrength { get; set; } // Additive strength of buff.
-    public float multiStrength { get; set; } // Multiplicative strength of buff.
+    public float multi { get; set; } // Multiplicative strength of buff.
     public float duration { get; set; } // Duration of the ability.
 
     public int procEffect { get; set; } // Ability ID that is triggered on the target.
@@ -33,5 +33,15 @@ public class Ability
     public Ability()
     {
 
+    }
+
+    public string Debug()
+    {
+        string s = "";
+
+        s += "ID: " + id + ", I am " + title + ", a " + type + " ability.\n";
+        s += "I cost " + energyCost + " to use and reach " + range;
+
+        return s;
     }
 }

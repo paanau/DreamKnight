@@ -11,6 +11,7 @@ public class CharacterControl : MonoBehaviour
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
     private List<Ability> myAbilities = new List<Ability>();
+    [SerializeField] private List<Ability> activeEffects = new List<Ability>();
     [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
@@ -83,12 +84,13 @@ public class CharacterControl : MonoBehaviour
                 {
                     inCombat = true;
                     main.InitiateCombat(gameObject, hit.collider.gameObject);
-                    myAnimator.SetTrigger("enterCombat");
+                    //myAnimator.SetTrigger("enterCombat");
                     myAnimator.speed = 1f / attackCooldown;
                 }
             }
             ManageAbilities();
         }
+        EffectTick();
     }
 
     public void SetGameController(GameObject go)
@@ -99,21 +101,12 @@ public class CharacterControl : MonoBehaviour
         myAnimator = GetComponent<Animator>();
     }
 
-    public int DamageDealt()
+    public float DamageDealt()
     {
-        int damageDealt = Mathf.FloorToInt(baseDamage * damageModifiers);
-        if (damageModifiers > 2)
-        {
-            damageModifiers -= 1;
-        }
-        else
-        {
-            damageModifiers = 1;
-        }
-        return damageDealt;
+        return baseDamage * damageModifiers;
     }
 
-    public bool DamageTaken(int damage)
+    public bool DamageTaken(float damage)
     {
         if (shieldHealth > 0)
         {
@@ -168,7 +161,7 @@ public class CharacterControl : MonoBehaviour
     private void EndCombat()
     {
         inCombat = false;
-        myAnimator.SetTrigger("leaveCombat");
+        //myAnimator.SetTrigger("leaveCombat");
     }
 
     public float GetCooldown()
@@ -184,6 +177,66 @@ public class CharacterControl : MonoBehaviour
         var main = myBloodLoss.main;
         main.simulationSpeed = runSpeed;
         myBloodLoss.Play();
+    }
+
+    public void ApplyEffect(Ability effect)
+    {
+        if (effect.buff)
+        {
+            activeEffects.Add(effect);
+            //switch(effect.buffTarget)
+            //{
+            //    case "health":
+            //        break;
+            //    case "defense":
+            //        break;
+            //    case "attack":
+            //        break;
+            //    case "shield":
+            //        break;
+            //}
+        }
+        else
+        {
+            TriggerEffect(effect);
+        }
+    }
+
+    private void EffectTick()
+    {
+        foreach (Ability effect in activeEffects)
+        {
+            if (effect.durationType == "time")
+            {
+                effect.interval -= Time.deltaTime * gameRunSpeed;
+                if (effect.interval <= 0)
+                {
+                    effect.interval = effect.baseInterval;
+                    effect.duration -= effect.interval;
+                    TriggerEffect(effect);
+                }
+            }
+        }
+        activeEffects.RemoveAll(effect => effect.duration <= 0);
+    }
+
+    public void TriggerEffect(Ability effect)
+    {
+
+        switch(effect.buffTarget)
+        {
+            case "health":
+                if (effect.buffType == "add")
+                {
+                    currentHP += effect.strength;
+                }
+                SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
+                SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
+                Debug.Log(gameObject.name + " got " + effect.strength + " HP!");
+                break;
+            default:
+                break;
+        }
     }
 
     public bool IsAlive()
@@ -219,12 +272,12 @@ public class CharacterControl : MonoBehaviour
     public void SetMyTurn(bool value)
     {
         myTurn = value;
-        myAnimator.SetTrigger("idle");
+        //myAnimator.SetTrigger("idle");
     }
 
     public void AdvanceMe(float modifiers)
     {
-        myAnimator.SetTrigger("move");
+        //myAnimator.SetTrigger("move");
         transform.Translate(0.1f * modifiers * speedModifiers * baseSpeed * directionModifier, 0, 0);
         myAnimator.speed = modifiers * baseSpeed + 1;
     }
@@ -256,39 +309,26 @@ public class CharacterControl : MonoBehaviour
         main.simulationSpeed = newSpeed;
     }
 
-    public float UseAbility(string s)
+    public float UseAbility(string dir)
     {
-        Ability ab = SelectAbility(s);
-        if (s == "w")
+        Ability ab = SelectAbility(dir);
+        if (dir == "Ranged")
         {
+            Debug.Log("UA: " + ab.Debug());
             GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
-            ps.GiveSettings((1 + myAnimator.speed) * 0.1f, 10, 100);
+            ps.GiveSettings(ab);
             ps.SetAnimationSpeed(gameRunSpeed);
-            return ab.energyCost;
+            
         }
-
-        
-        return 1;
+        return ab.energyCost;
     }
 
-    private Ability SelectAbility(string s)
+    public Ability SelectAbility(string dir)
     {
         if (myAbilities.Count > 0)
         {
-            switch (s)
-            {
-                case "w":
-                    return myAbilities.Find(a => a.type == "Ranged");
-                case "a":
-                    return myAbilities.Find(a => a.type == "Defense");
-                case "s":
-                    return myAbilities.Find(a => a.type == "Misc");
-                case "d":
-                    return myAbilities.Find(a => a.type == "Offense");
-            }
-
-            return new Ability();
+            return myAbilities.Find(a => a.type == dir);
         }
         else
         {
@@ -300,7 +340,7 @@ public class CharacterControl : MonoBehaviour
     {
         if (speedModifiers > 1)
         {
-            speedModifiers -= Time.deltaTime;
+            speedModifiers -= Time.deltaTime * gameRunSpeed;
         }
         else
         {
@@ -308,7 +348,7 @@ public class CharacterControl : MonoBehaviour
         }
         if (damageModifiers > 1)
         {
-            damageModifiers -= Time.deltaTime;
+            damageModifiers -= Time.deltaTime * gameRunSpeed;
         }
         else
         {

@@ -149,7 +149,7 @@ public class GameController : MonoBehaviour
         MeleeTick();
         if (playerAttackCooldown <= 0)
         {
-            if (!currentMeleeTargetController.DamageTaken(Mathf.FloorToInt(playerController.DamageDealt() * rushDamageBoost)))
+            if (!currentMeleeTargetController.DamageTaken(playerController.DamageDealt() * rushDamageBoost))
             {
                 EndCombat();
                 playerController.WonCombat();
@@ -236,40 +236,26 @@ public class GameController : MonoBehaviour
     private void UseAbility(Vector2 direction)
     {
         float energyCost = 0;
+        string dir = "";
         if (direction != Vector2.zero)
         {
             if (direction.x != 0)
             {
-                if (direction.x < 0)
-                {
-                    energyCost = playerController.UseAbility("a");
-                    // Defense
-                }
-                else
-                {
-                    energyCost = playerController.UseAbility("d");
-                    // Melee attack
-                }
+                dir = direction.x < 0 ? "Defense" : "Offense";
             }
             if (direction.y != 0)
             {
-                if (direction.y < 0)
-                {
-                    energyCost = playerController.UseAbility("s");
-                    // Vehicle
-                }
-                else
-                {
-                    // Ranged attack
-                    energyCost = playerController.UseAbility("w");
-                    Debug.Log("Pew!");
-                }
+                dir = direction.y < 0 ? "Misc" : "Ranged";
             }
-            slowdownActive = false;
-            ChangeSpeeds();
-            TogglePauseSelectionUI(false);
+            if (playerController.SelectAbility(dir).energyCost < chargeEnergy)
+            {
+                energyCost = playerController.UseAbility(dir);
+                slowdownActive = false;
+                ChangeSpeeds();
+                TogglePauseSelectionUI(false);
+                chargeEnergy -= energyCost;
+            }
         }
-        chargeEnergy -= energyCost;
     }
 
     private void UseItem(Vector2 direction)

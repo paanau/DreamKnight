@@ -10,18 +10,17 @@
 		"type": "Ranged",
 		"target": "closest",
 		"energyCost": 300,
-        "damage": 100,
+        "strength": 100,
 		"element": "fire",
 		"offensive": true,
-		"procChance": 20,
+		"procChance": 100,
 		"procEffect": 1000,
 		"procStrength": -50,
 		"procDuration": 5,
 		"procInterval": 0.5,
 		"procDurationType": "time",
         "range": 10,
-        "speed": 1,
-
+        "speed": 1
     },
     {
         "id": 2,
@@ -32,7 +31,7 @@
 		"buff": true,
 		"buffTarget": "shield",
 		"buffType": "add",
-		"flatStrength": 100,
+		"strength": 100,
 		"duration": 0,
 		"durationType": "instantaneous"
     },
@@ -43,9 +42,9 @@
 		"target": "self",
 		"energyCost": 300,
 		"buff": true,
-		"buffTarget": "damage",
+		"buffTarget": "attack",
 		"buffType": "multi",
-		"multiStrength": 3,
+		"multi": 3,
 		"duration": 3,
 		"durationType": "use"
     },
@@ -58,18 +57,19 @@
 		"buff": true,
 		"buffTarget": "defense",
 		"buffType": "mixed",
-		"flatStrength": 10,
-		"multiStrength": 2,
+		"strength": 10,
+		"multi": 2,
 		"duration": 10,
 		"durationType": "time"
 	},
 	{
 		"id": 1000,
-		"title": "Burn",
+		"title": "Damage Over Time",
 		"type": "Effect",
 		"target": "self",
 		"buff": true,
 		"buffTarget": "health",
-		"buffType": "add"
+		"buffType": "add",
+		"durationType": "time"
 	}
 ]

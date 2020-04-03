@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine;
 using LitJson;
-using System.Collections.Generic;
 using System.IO;
 
 public class ItemDatabase : MonoBehaviour {
@@ -16,10 +14,10 @@ public class ItemDatabase : MonoBehaviour {
 		ConstructItemDatabase();	
 
        //DEMO 
-       Debug.Log("My inventory:");
+       //Debug.Log("My inventory:");
        foreach(Item i in database)
        {
-	           Debug.Log(i.Title);
+	           //Debug.Log(i.Title);
        } 
 	}
 
