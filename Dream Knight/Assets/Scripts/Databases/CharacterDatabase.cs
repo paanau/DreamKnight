@@ -72,7 +72,17 @@ public class CharacterDatabase : MonoBehaviour {
 			try {
 			newCharacter.range = (float)characterData[i]["range"];
 			} catch {};
-			try {
+            try
+            {
+                newCharacter.hitchance = (float)characterData[i]["hitchance"];
+            }
+            catch { };
+            try
+            {
+                newCharacter.evasion = (float)characterData[i]["evasion"];
+            }
+            catch { };
+            try {
 			newCharacter.attackCooldown = (float)characterData[i]["attackCooldown"];
 			} catch {};
 			try {
