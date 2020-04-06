@@ -12,11 +12,12 @@ public class CharacterControl : MonoBehaviour
     private ParticleSystem.Particle[] effectParticles;
     private List<Ability> myAbilities = new List<Ability>();
     [SerializeField] private List<Ability> activeEffects = new List<Ability>();
-    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers;
+    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, hitchance, evasion;
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
     [SerializeField] private GameObject projectilePrefab, effectCircle, healthBar;
+    private string title;
     private GameObject[] healthbarComponents;
     private int directionModifier;
 
@@ -41,6 +42,7 @@ public class CharacterControl : MonoBehaviour
             Debug.Log("Character with id " + typeID + " not found! By: " + gameObject.name);
         }
 
+        title = character.title;
         isAlive = character.isAlive;
         baseMaxHP = character.baseMaxHP;
         currentHP = character.currentHP;
@@ -49,11 +51,14 @@ public class CharacterControl : MonoBehaviour
         inCombat = character.inCombat;
         waiting = character.waiting;
         range = character.range;
+        hitchance = character.hitchance;
+        evasion = character.evasion;
         attackCooldown = character.attackCooldown;
         directionModifier = character.directionModifier;
         gameRunSpeed = character.gameRunSpeed;
         speedModifiers = character.speedModifiers;
         damageModifiers = character.damageModifiers;
+
 
         InitialiseAbilities(typeID);
     }
@@ -105,12 +110,22 @@ public class CharacterControl : MonoBehaviour
         myAnimator = GetComponent<Animator>();
     }
 
+    public float GetHitChance()
+    {
+        return hitchance;
+    }
+
+    public float GetEvasion()
+    {
+        return evasion;
+    }
+
     public float DamageDealt()
     {
         return baseDamage * damageModifiers;
     }
 
-    public bool DamageTaken(float damage)
+    public bool DamageTaken(float damage, int crit)
     {
         if (shieldHealth > 0)
         {
@@ -126,12 +141,12 @@ public class CharacterControl : MonoBehaviour
             }
             SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
         }
-
         if (damage > baseMaxHP)
         {
             CriticalDeath();
         }
         currentHP -= damage;
+        StartCoroutine(FlashOnHit(damage, crit));
         SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
         SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
         if (currentHP <= 0)
@@ -147,6 +162,16 @@ public class CharacterControl : MonoBehaviour
     private void CriticalDeath()
     {
 
+    }
+
+    IEnumerator FlashOnHit(float damage, int crit)
+    {
+        SpriteRenderer toFlash = GetComponent<SpriteRenderer>();
+        float flash = 1 - (damage * 2 / baseMaxHP);
+        toFlash.color = new Color(1,flash,flash);
+        Debug.Log("I am " + title + " and I am flashing to " + toFlash.color);
+        yield return new WaitForSeconds(crit * 0.05f);
+        toFlash.color = Color.white;
     }
 
     public void WonCombat()
@@ -232,7 +257,7 @@ public class CharacterControl : MonoBehaviour
             case "health":
                 if (effect.buffType == "add")
                 {
-                    currentHP += effect.strength;
+                    if (effect.strength >= 0) { currentHP += effect.strength; } else { DamageTaken(-effect.strength, 1); }
                 }
                 SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
                 SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
@@ -321,7 +346,7 @@ public class CharacterControl : MonoBehaviour
             Debug.Log("UA: " + ab.Debug());
             GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
-            ps.GiveSettings(ab);
+            ps.GiveSettings(new Ability(ab));
             ps.SetAnimationSpeed(gameRunSpeed);
             
         }

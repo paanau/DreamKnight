@@ -35,6 +35,112 @@ public class Ability
 
     }
 
+    public Ability(Ability ab)
+    {
+        id = ab.id;
+        title = ab.title;
+        try
+        {
+            type = (string)ab.type;
+        }
+        catch { };
+        try
+        {
+            target = (string)ab.target;
+        }
+        catch { };
+        try
+        {
+            element = (string)ab.element;
+        }
+        catch { };
+        try
+        {
+            buffTarget = (string)ab.buffTarget;
+        }
+        catch { };
+        try
+        {
+            buffType = (string)ab.buffType;
+        }
+        catch { };
+        try
+        {
+            durationType = (string)ab.durationType;
+        }
+        catch { };
+        try
+        {
+            buff = (bool)ab.buff;
+        }
+        catch { };
+        try
+        {
+            energyCost = (float)ab.energyCost;
+        }
+        catch { };
+        try
+        {
+            strength = (float)ab.strength;
+        }
+        catch { };
+        try
+        {
+            procChance = (float)ab.procChance;
+        }
+        catch { };
+        try
+        {
+            procDuration = (float)ab.procDuration;
+        }
+        catch { };
+        try
+        {
+            procStrength = (float)ab.procStrength;
+        }
+        catch { };
+        try
+        {
+            procInterval = (float)ab.procInterval;
+        }
+        catch { };
+        try
+        {
+            interval = (float)ab.interval;
+        }
+        catch { };
+        try
+        {
+            baseInterval = (float)ab.interval;
+        }
+        catch { };
+        try
+        {
+            speed = (float)ab.speed;
+        }
+        catch { };
+        try
+        {
+            range = (float)ab.range;
+        }
+        catch { };
+        try
+        {
+            multi = (float)ab.multi;
+        }
+        catch { };
+        try
+        {
+            duration = (float)ab.duration;
+        }
+        catch { };
+        try
+        {
+            procEffect = (int)ab.procEffect;
+        }
+        catch { };
+    }
+
     public string Debug()
     {
         string s = "";

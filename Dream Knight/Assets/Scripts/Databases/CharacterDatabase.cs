@@ -99,7 +99,12 @@ public class CharacterDatabase : MonoBehaviour {
 			try {
 			newCharacter.damageModifiers = (float)characterData[i]["damageModifiers"];
 			} catch {};
-			database.Add(newCharacter);
+            try
+            {
+                newCharacter.experience = (int)characterData[i]["experience"];
+            }
+            catch { };
+            database.Add(newCharacter);
 		}
 	}
 }

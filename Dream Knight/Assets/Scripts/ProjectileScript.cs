@@ -45,7 +45,7 @@ public class ProjectileScript : MonoBehaviour
     private void HitTarget(GameObject go)
     {
         CharacterControl targetCC = go.GetComponent<CharacterControl>();
-        targetCC.DamageTaken((int)myAbility.strength);
+        targetCC.DamageTaken(myAbility.strength, 1);
         if (Random.Range(0f, 100f) < myAbility.procChance)
         {
             Ability procEffect = GameObject.Find("GameController").GetComponent<AbilityDatabase>().FetchAbilityById(myAbility.procEffect);

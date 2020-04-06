@@ -20,12 +20,15 @@ public class Character
     public float baseSpeed          { get; set; }
     public float range              { get; set; }    
     public float attackCooldown     { get; set; }    
+    public float hitchance            { get; set; }    
+    public float evasion            { get; set; }    
    // public Animator myAnimator      { get; set; }
   //  public float animatorSpeed      { get; set; }
     public float gameRunSpeed       { get; set; }
     public float speedModifiers     { get; set; }
     public float damageModifiers    { get; set; }
     public int directionModifier    { get; set; }
+    public int experience           { get; set; }
 
 
     public Character()
@@ -34,13 +37,15 @@ public class Character
         isAlive = true;
         baseMaxHP = 1000;
         currentHP = baseMaxHP;
-        baseDamage = 30;
+        baseDamage = 20;
         baseSpeed = 1;
         range = 2f;
         inCombat = false;
         waiting = false;
         myTurn = false;
         range = 2f;
+        hitchance = 10;
+        evasion = 10;
         attackCooldown = 1f;
         directionModifier = -1;
         shieldHealth = 0;

@@ -2,9 +2,11 @@
 	{
 		"id": 0,
         "title": "Dream Knight",
-        "baseDamage": 10,
+        "baseDamage": 50,
         "attackCoolDown": 0.6,
         "directionModifier": 1,
+		"hitchance": 50,
+		"evasion": 30,
         "myTurn": true
 
     },

@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     private bool chargeButton, slowdownActive;
     public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
-    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab;
+    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab, experienceOrbs;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
@@ -149,28 +149,72 @@ public class GameController : MonoBehaviour
         MeleeTick();
         if (playerAttackCooldown <= 0)
         {
-            if (!currentMeleeTargetController.DamageTaken(playerController.DamageDealt() * rushDamageBoost))
+            float damage = playerController.DamageDealt() * rushDamageBoost;
+            int critDegree = 1;
+            float toHit = playerController.GetHitChance();
+            float evade = currentMeleeTargetController.GetEvasion();
+            float roll = Random.Range(0, 100);
+            if (toHit + roll >= evade) // 50 + 90 >= 10
             {
-                EndCombat();
-                playerController.WonCombat();
-                currentMeleeTargetController.LostCombat();
-                targetAttackCooldown = 999f;
+               for (int i = 1; i < 5; i++)
+                {
+                    if (toHit + roll >= i * 100) // 140 >= 0, 100
+                    {
+                        critDegree *= 2;
+                    }
+                }
+                damage *= critDegree;
+                if (!currentMeleeTargetController.DamageTaken(damage, critDegree)) // Hit
+                {
+                    EndCombat();
+                    playerController.WonCombat();
+                    currentMeleeTargetController.LostCombat();
+                    targetAttackCooldown = 999f;
+                }
             }
+            else 
+            {
+                damage = 0;
+                // Miss
+            }
+            
             playerAttackCooldown += playerController.GetCooldown() * gameRunSpeed;
-            currentMeleeTargetController.TriggerBloodEffect(Mathf.FloorToInt(playerController.DamageDealt() * rushDamageBoost), gameRunSpeed);
+            currentMeleeTargetController.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
         }
 
         if (targetAttackCooldown <= 0)
         {
-            if (!playerController.DamageTaken(currentMeleeTargetController.DamageDealt()))
+            float damage = currentMeleeTargetController.DamageDealt();
+            int critDegree = 1;
+            float toHit = playerController.GetHitChance();
+            float evade = currentMeleeTargetController.GetEvasion();
+            float roll = Random.Range(0, 100);
+            if (toHit + roll >= evade) // 50 + 90 >= 10
             {
-                EndCombat();
-                playerController.LostCombat();
-                currentMeleeTargetController.WonCombat();
-                PlayerDied();
+                for (int i = 1; i < 5; i++)
+                {
+                    if (toHit + roll >= i * 100) // 140 >= 0, 100
+                    {
+                        critDegree *= 2;
+                    }
+                }
+                damage *= critDegree;
+                if (!playerController.DamageTaken(damage, critDegree))
+                {
+                    EndCombat();
+                    playerController.LostCombat();
+                    currentMeleeTargetController.WonCombat();
+                    PlayerDied();
+                }
             }
+            else
+            {
+                damage = 0;
+                // Miss
+            }
+
             targetAttackCooldown += currentMeleeTargetController.GetCooldown() * gameRunSpeed;
-            playerController.TriggerBloodEffect(currentMeleeTargetController.DamageDealt(), gameRunSpeed);
+            playerController.TriggerBloodEffect(damage, gameRunSpeed);
         }
     }
 
