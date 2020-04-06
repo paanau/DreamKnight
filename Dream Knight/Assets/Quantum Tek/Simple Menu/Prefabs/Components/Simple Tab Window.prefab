@@ -165,8 +165,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6133200047676574366}
-  - component: {fileID: 6133200047676574367}
-  - component: {fileID: 6133200047676574432}
   m_Layer: 5
   m_Name: Simple Tab Window
   m_TagString: Untagged
@@ -195,45 +193,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6133200047676574367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6133200047676574365}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f68b3d8fe634001900e74dc6e9143c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 6133200048477543888}
-  animator: {fileID: 6133200047676574432}
-  tab: {fileID: 6133200048121096051}
-  animationType: 1
-  animatorBool: Shown
-  animatorShowTrigger: Show
-  animatorHideTrigger: Hide
-  active: 0
---- !u!95 &6133200047676574432
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6133200047676574365}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3d9ea2c4bf05f4f81bbdde98325b64f6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6133200048121096049
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,11 +202,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6133200048121096050}
-  - component: {fileID: 6133200048121096051}
   - component: {fileID: 6133200048121096053}
   - component: {fileID: 6133200048121096052}
   - component: {fileID: 6133200048121096054}
-  - component: {fileID: 6133200048121096055}
   m_Layer: 5
   m_Name: Simple Tab
   m_TagString: Untagged
@@ -275,24 +232,6 @@ RectTransform:
   m_AnchoredPosition: {x: -75, y: 25}
   m_SizeDelta: {x: 75, y: 25}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &6133200048121096051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6133200048121096049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 115939ae9414541fe91d9f53e7307f24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 6133200048121096055}
-  animationType: 1
-  animatorBool: Shown
-  animatorShowTrigger: Show
-  animatorHideTrigger: Hide
-  active: 0
 --- !u!222 &6133200048121096053
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -372,25 +311,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!95 &6133200048121096055
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6133200048121096049}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1c3d2520ec7cb4128b413668f4bd1e23, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6133200048477543887
 GameObject:
   m_ObjectHideFlags: 0

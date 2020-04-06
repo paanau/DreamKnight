@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 namespace QuantumTek.SimpleMenu
 {
@@ -13,7 +14,7 @@ namespace QuantumTek.SimpleMenu
     }
 
     /// <summary> Handles everything in a tab group, from the tab windows to which one is open. </summary>
-    [AddComponentMenu("Quantum Tek/Simple Menu/Tab Group")]
+    [AddComponentMenu("`            Simple Menu/Tab Group")]
     [DisallowMultipleComponent]
     public class SM_TabGroup : MonoBehaviour
     {
@@ -88,6 +89,18 @@ namespace QuantumTek.SimpleMenu
                 else if (animationType == SM_AnimationType.AnimatorBool) animator.SetBool(animatorBool, shown);
                 else if (animationType == SM_AnimationType.AnimatorTrigger) animator.SetBool(shown ? animatorShowTrigger : animatorHideTrigger, shown);
             }
+        }
+
+        public void ToggleDelay(bool shown)
+        {
+            Debug.Log("So gonna show the tab");
+            StartCoroutine(ToggleWithDelay(shown));
+        }
+        private IEnumerator ToggleWithDelay(bool shown, float delay = 0.5f)
+        {
+            yield return new WaitForSeconds(0.5f);
+            active = shown;
+
         }
 
         /// <summary> Changes the current tab. </summary>
