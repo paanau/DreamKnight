@@ -100,9 +100,10 @@ public class GameController : MonoBehaviour
 
     private void SpawnCharacters()
     {
-        for (int i = 1; i < 10; i++)
+        for (int i = 1; i < 20; i++)
         {
-            GameObject newEnemy = Instantiate(enemyPrefab, new Vector3(i*15, 0, 0), Quaternion.identity);
+            GameObject newEnemy = Instantiate(enemyPrefab, new Vector3(i*20, 0, 0), Quaternion.identity);
+            newEnemy.name = "Enemy " + i;
         }
     }
 
@@ -149,7 +150,8 @@ public class GameController : MonoBehaviour
         MeleeTick();
         if (playerAttackCooldown <= 0)
         {
-            float damage = playerController.DamageDealt() * rushDamageBoost;
+            float damage = playerController.DamageDealt();
+            if (playerTurn) { damage *= rushDamageBoost; }
             int critDegree = 1;
             float toHit = playerController.GetHitChance();
             float evade = currentMeleeTargetController.GetEvasion();
@@ -240,40 +242,64 @@ public class GameController : MonoBehaviour
 
     private void ChangeTurns()
     {
+        GetComponent<LevelController>().UpdateEnemies(enemies);
         gameRunSpeed = 1;
         ChangeSpeeds();
         firstTurn = false;
+    }
+
+    public void GameOver()
+    {
+        gameRunSpeed = 0.05f;
+        gameActive = false;
+        StartCoroutine(PlayerDeathZoomIn());
+    }
+
+    IEnumerator PlayerDeathZoomIn()
+    {
+        Vector3 target = playerCharacter.transform.position;
+        target = new Vector3(target.x, target.y, mainCamera.transform.position.z);
+        while (Vector3.Distance(mainCamera.transform.position, target) > 0.1f)
+        {
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position, new Vector3(target.x, target.y, mainCamera.transform.position.z), 0.04f);
+            mainCamera.GetComponent<Camera>().orthographicSize *= 0.99f;
+            yield return null;
+        }
     }
 
     public void OnCharge()
     {
         chargeButton = !chargeButton;
 
-        if (playerTurn && chargeActive)
+        if (playerTurn && chargeActive && gameActive)
         {
             PauseForAbility();
         }
-        if (!playerTurn)
+        if (!playerTurn && gameActive)
         {
             PauseForItem();
         }
+        if (!gameActive) OnRestart();
     }
 
     public void OnRestart()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void OnMove(InputValue iv)
     {
         Vector2 direction = iv.Get<Vector2>();
-        if (playerTurn)
+        if (gameActive)
         {
-            UseAbility(direction);
-        }
-        else
-        {
-            UseItem(direction);
+            if (playerTurn)
+            {
+                UseAbility(direction);
+            }
+            else
+            {
+                UseItem(direction);
+            }
         }
     }
 
@@ -359,7 +385,7 @@ public class GameController : MonoBehaviour
 
             if (playerCharacter.transform.position.x >= mainCamera.transform.position.x - 3)
             {
-                mainCamera.transform.position = new Vector3(playerCharacter.transform.position.x + 3, 2, -10);
+                mainCamera.transform.position = new Vector3(playerCharacter.transform.position.x + 3, 2.5f, -10);
             }
         }
 

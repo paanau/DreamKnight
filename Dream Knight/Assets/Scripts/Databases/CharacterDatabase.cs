@@ -11,8 +11,8 @@ public class CharacterDatabase : MonoBehaviour {
 	void Awake()
 	{
         characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
-		ConstructCharacterDatabase();	
-
+		ConstructCharacterDatabase();
+        Debug.Log(characterData);
        //DEMO 
        //Debug.Log("My characters:");
        foreach(Character i in database)
@@ -104,9 +104,15 @@ public class CharacterDatabase : MonoBehaviour {
                 newCharacter.experience = (int)characterData[i]["experience"];
             }
             catch { };
+            try
+            {
+                newCharacter.resistance = (int)characterData[i]["resistance"];
+            }
+            catch { };
             database.Add(newCharacter);
 		}
 	}
+    
 }
 
 // public class Enemy : Character

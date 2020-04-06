@@ -20,7 +20,7 @@ public class Character
     public float baseSpeed          { get; set; }
     public float range              { get; set; }    
     public float attackCooldown     { get; set; }    
-    public float hitchance            { get; set; }    
+    public float hitchance          { get; set; }    
     public float evasion            { get; set; }    
    // public Animator myAnimator      { get; set; }
   //  public float animatorSpeed      { get; set; }
@@ -29,6 +29,7 @@ public class Character
     public float damageModifiers    { get; set; }
     public int directionModifier    { get; set; }
     public int experience           { get; set; }
+    public int resistance           { get; set; }
 
 
     public Character()
@@ -59,7 +60,7 @@ public class Character
         gameRunSpeed = 1;
         speedModifiers = 1;
         damageModifiers = 1;
-        
+        resistance = 0;
     }
 
 }

@@ -21,6 +21,9 @@ public class LevelController : MonoBehaviour
     // Timer to run the enemy reallocation
     float tick = 2.0f;
 
+    // Spawn bias to spawn more difficult enemies
+    int killCount = 0;
+
     // Start is called before the first frame update
     private void Awake()
     {
@@ -52,11 +55,15 @@ public class LevelController : MonoBehaviour
     // Sometimes add bonuses 
     public void UpdateEnemies(List<GameObject> enemies)
     {
-        foreach(GameObject enemy in enemies)
+        player = GameObject.Find("Character");
+        foreach (GameObject enemy in enemies)
         {
+            // if (Vector3.Distance(enemy.transform.position, player.transform.position) < 30) enemy.GetComponent<SpriteRenderer>().enabled = true;
+
             // -20 is to check when the enemy has gone far enough behind the player/camera
-            if(enemy.transform.position.x - Camera.main.transform.position.x < -20)
+            if(enemy.transform.position.y < -20)
             {
+                Debug.Log("I am down!");
                 // move to the end
                 // Check what level enemy should be set at 
                 // Check if should change to a BOSS or TREASURE
@@ -68,7 +75,10 @@ public class LevelController : MonoBehaviour
                     xPos = player.transform.position.x + mapBuffer;
                 }
                 xPos = xPos + Random.Range(4.0f, 8.0f);
-                enemy.GetComponent<CharacterControl>().SpawnCharacter(1, xPos);
+                int typeID = Random.Range(0, 100) > killCount ? 1 : 2;
+                enemy.GetComponent<CharacterControl>().SpawnCharacter(typeID, xPos);
+                enemy.transform.localScale = new Vector3(4f, 4f, 4f);
+                enemy.GetComponent<CharacterControl>().SetGameController(GameObject.Find("GameController"));
                 //enemy.transform.position = new Vector2( enemy.transform.position.y);
                 // Reactivate enemy 
                 //enemy.GetComponent<CharacterControl>().SetAlive(true);

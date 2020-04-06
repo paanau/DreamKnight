@@ -321,7 +321,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4749821695297356604}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_Children:
   - {fileID: 3163888829408890960}
@@ -397,6 +397,10 @@ MonoBehaviour:
   baseSpeed: 0
   speedModifiers: 0
   damageModifiers: 0
+  hitchance: 0
+  evasion: 0
+  resistance: 0
+  regen: 0
   inCombat: 0
   isAlive: 0
   waiting: 0
@@ -410,6 +414,9 @@ MonoBehaviour:
     type: 3}
   effectCircle: {fileID: 0}
   healthBar: {fileID: 1103086064002699342}
+  xpOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba, type: 3}
+  directionModifier: 0
+  experience: 0
 --- !u!61 &4749821695297356600
 BoxCollider2D:
   m_ObjectHideFlags: 0

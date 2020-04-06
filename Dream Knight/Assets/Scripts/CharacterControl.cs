@@ -12,14 +12,14 @@ public class CharacterControl : MonoBehaviour
     private ParticleSystem.Particle[] effectParticles;
     private List<Ability> myAbilities = new List<Ability>();
     [SerializeField] private List<Ability> activeEffects = new List<Ability>();
-    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, hitchance, evasion;
+    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, hitchance, evasion, resistance, regen;
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
-    [SerializeField] private GameObject projectilePrefab, effectCircle, healthBar;
+    [SerializeField] private GameObject projectilePrefab, effectCircle, healthBar, xpOrbs;
     private string title;
     private GameObject[] healthbarComponents;
-    private int directionModifier;
+    [SerializeField] private int directionModifier, experience;
 
     // Start is called before the first frame update
     void Start()
@@ -27,13 +27,14 @@ public class CharacterControl : MonoBehaviour
         SpawnCharacter(charTypeID);
     }
 
-    public void SpawnCharacter(int typeID, float xPos = 20)
+    public void SpawnCharacter(int typeID, float xPos = 15)
     {
-    // Initialize character
+        // Initialize character
 
-    // Set position
+        // Set position
+        transform.position = transform.position.y > -20 ? transform.position : new Vector3(xPos, 0, 0);
 
-    // Load abilities from the database
+        // Load abilities from the database
         try {
             character = GameObject.Find("GameController").GetComponent<CharacterDatabase>().FetchCharacterById(typeID);
             Debug.Log(character.title + "'s turn: " + character.myTurn);
@@ -58,7 +59,8 @@ public class CharacterControl : MonoBehaviour
         gameRunSpeed = character.gameRunSpeed;
         speedModifiers = character.speedModifiers;
         damageModifiers = character.damageModifiers;
-
+        experience = character.experience;
+        resistance = character.resistance;
 
         InitialiseAbilities(typeID);
     }
@@ -141,10 +143,10 @@ public class CharacterControl : MonoBehaviour
             }
             SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
         }
-        if (damage > baseMaxHP)
-        {
-            CriticalDeath();
-        }
+        //if (damage > baseMaxHP)
+        //{
+        //    CriticalDeath();
+        //}
         currentHP -= damage;
         StartCoroutine(FlashOnHit(damage, crit));
         SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
@@ -152,7 +154,7 @@ public class CharacterControl : MonoBehaviour
         if (currentHP <= 0)
         {
             // Death happens here
-            // transform.Rotate(0, 0, -90);
+            Death();
             inCombat = false;
             return false;
         }
@@ -164,6 +166,30 @@ public class CharacterControl : MonoBehaviour
 
     }
 
+    private void Death()
+    {
+        if (character.id != 0) StartCoroutine(BurstIntoTreats());
+        else main.GameOver();
+
+        GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
+        ps.GetComponent<XPOrbScript>().Initialise(character.experience);
+    }
+
+    IEnumerator BurstIntoTreats()
+    {
+        healthBar.GetComponent<Canvas>().enabled = false;
+        Vector3 size = transform.localScale;
+        for (int i = 0; i < 10; i++)
+        {
+            transform.localScale *= 0.9f;
+            yield return null;
+        }
+        transform.position = new Vector3(0, -100, 0);
+        transform.localScale = size;
+        healthBar.GetComponent<Canvas>().enabled = true;
+        yield return null;
+    }
+
     IEnumerator FlashOnHit(float damage, int crit)
     {
         SpriteRenderer toFlash = GetComponent<SpriteRenderer>();
@@ -172,6 +198,11 @@ public class CharacterControl : MonoBehaviour
         Debug.Log("I am " + title + " and I am flashing to " + toFlash.color);
         yield return new WaitForSeconds(crit * 0.05f);
         toFlash.color = Color.white;
+    }
+
+    public void GrantExperience(int newXP)
+    {
+        experience += newXP;
     }
 
     public void WonCombat()
@@ -470,7 +501,7 @@ public class CharacterControl : MonoBehaviour
     {
         foreach (GameObject bar in healthbarComponents)
         {
-            if (bar.name == name)
+            if (bar.name == name || name == "all")
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
             }

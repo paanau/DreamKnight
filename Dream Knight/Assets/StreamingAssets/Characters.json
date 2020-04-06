@@ -12,10 +12,19 @@
     },
     {
         "id": 1,
-        "title": "Turmeric Tentacle"
+        "title": "Turmeric Tentacle",
+		"baseDamage": 15,
+		"hitchance": 10,
+		"evasion": 10,
+		"experience": 100
     },
     {
         "id": 2,
-        "title": "Cantankerous Calypso Cyclops"
+        "title": "Cantankerous Calypso Cyclops",
+		"baseDamage": 30,
+		"hitchance": 20,
+		"evasion": 30,
+		"resistance": 10,
+		"experience": 200
     }
 ]
