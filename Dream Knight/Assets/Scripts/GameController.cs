@@ -15,7 +15,8 @@ public class GameController : MonoBehaviour
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
     private List<GameObject> enemies = new List<GameObject>();
-
+    private int test;
+    private Vector2 touchDelta;
 
     void Awake(){
 
@@ -269,17 +270,31 @@ public class GameController : MonoBehaviour
 
     public void OnCharge()
     {
+        test++;
+        GameObject.Find("Test").GetComponent<TextMesh>().text = test.ToString() + " + " + touchDelta.magnitude;
         chargeButton = !chargeButton;
 
-        if (playerTurn && chargeActive && gameActive)
+        if (gameActive)
         {
-            PauseForAbility();
+            if (!chargeButton && chargeActive)
+            {
+                if (touchDelta.magnitude >= 100)
+                {
+                    CalculateDelta();
+                }
+                else
+                {
+                    //PauseForAbility();
+                }
+            }
+            
         }
-        if (!playerTurn && gameActive)
+        else
         {
-            PauseForItem();
+            OnRestart();
         }
-        if (!gameActive) OnRestart();
+
+        touchDelta = Vector2.zero;
     }
 
     public void OnRestart()
@@ -287,19 +302,25 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void OnMove(InputControl<Vector2> iv)
+    {
+        touchDelta += iv.ReadValue();
+    }
+
     public void OnMove(InputValue iv)
     {
-        Vector2 direction = iv.Get<Vector2>();
-        if (gameActive)
+        touchDelta += iv.Get<Vector2>();
+    }
+
+    private void CalculateDelta()
+    {
+        if (playerTurn)
         {
-            if (playerTurn)
-            {
-                UseAbility(direction);
-            }
-            else
-            {
-                UseItem(direction);
-            }
+            UseAbility(touchDelta);
+        }
+        else
+        {
+            UseItem(touchDelta);
         }
     }
 
@@ -309,11 +330,11 @@ public class GameController : MonoBehaviour
         string dir = "";
         if (direction != Vector2.zero)
         {
-            if (direction.x != 0)
+            if (direction.x != 0 && Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
             {
                 dir = direction.x < 0 ? "Defense" : "Offense";
             }
-            if (direction.y != 0)
+            if (direction.y != 0 && Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
             {
                 dir = direction.y < 0 ? "Misc" : "Ranged";
             }
@@ -325,6 +346,28 @@ public class GameController : MonoBehaviour
                 TogglePauseSelectionUI(false);
                 chargeEnergy -= energyCost;
             }
+        }
+    }
+
+    private void UseAbility(string direction)
+    {
+        float energyCost = 0;
+        string dir = "";
+        if (direction.Equals("Left") || direction.Equals("Right"))
+        {
+            dir = direction.Equals("Left") ? "Defense" : "Offense";
+        }
+        if (direction.Equals("Up") || direction.Equals("Down"))
+        {
+            dir = direction.Equals("Down") ? "Misc" : "Ranged";
+        }
+        if (playerController.SelectAbility(dir).energyCost < chargeEnergy)
+        {
+            energyCost = playerController.UseAbility(dir);
+            slowdownActive = false;
+            ChangeSpeeds();
+            TogglePauseSelectionUI(false);
+            chargeEnergy -= energyCost;
         }
     }
 
@@ -419,35 +462,45 @@ public class GameController : MonoBehaviour
 
     private void PauseForAbility()
     {
-        if (!slowdownActive && chargeButton)
+        if (!slowdownActive)
         {
             slowdownActive = true;
             ChangeSpeeds();
             TogglePauseSelectionUI(true);
         }
-        else if (slowdownActive && chargeButton)
+        else
         {
+            Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(Touchscreen.current.primaryTouch.position.ReadValue());
+            Debug.Log(ray);
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("PauseUI"));
+            if (hit.collider != null)
+            {
+                string s = hit.collider.gameObject.name; //.Substring(15);
+                Debug.Log(s);
+                UseAbility(s);
+            }
+
             slowdownActive = false;
             ChangeSpeeds();
             TogglePauseSelectionUI(false);
         }
     }
 
-    private void PauseForItem()
-    {
-        if (!slowdownActive && chargeButton)
-        {
-            slowdownActive = true;
-            ChangeSpeeds();
-            TogglePauseSelectionUI(true);
-        }
-        else if (slowdownActive && chargeButton)
-        {
-            slowdownActive = false;
-            ChangeSpeeds();
-            TogglePauseSelectionUI(false);
-        }
-    }
+    //private void PauseForItem()
+    //{
+    //    if (!slowdownActive && chargeButton)
+    //    {
+    //        slowdownActive = true;
+    //        ChangeSpeeds();
+    //        TogglePauseSelectionUI(true);
+    //    }
+    //    else if (slowdownActive && chargeButton)
+    //    {
+    //        slowdownActive = false;
+    //        ChangeSpeeds();
+    //        TogglePauseSelectionUI(false);
+    //    }
+    //}
 
     private void ActivateEnemies()
     {

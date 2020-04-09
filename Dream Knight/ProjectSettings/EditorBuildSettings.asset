@@ -5,7 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Scenes/MainScene_Minimap_EnergyBar.unity
+    guid: 7e306ca75ff5811458821c4533aaf130
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: f7f94cfab4a18774bbaf9c526e355423,
+      type: 2}

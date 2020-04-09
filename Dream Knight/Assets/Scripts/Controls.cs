@@ -48,7 +48,7 @@ namespace Controls
                     ""name"": ""Charge"",
                     ""type"": ""Value"",
                     ""id"": ""ae6502eb-9ecf-49a2-b5f6-6bdf0913735a"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -196,6 +196,28 @@ namespace Controls
                 },
                 {
                     ""name"": """",
+                    ""id"": ""13c62173-a664-467e-88e1-dd542c67cc4f"",
+                    ""path"": ""<Touchscreen>/primaryTouch/radius"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": ""Touch;Keyboard&Mouse"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5391e424-63cb-4a35-afd2-7221ffa0b2fe"",
+                    ""path"": ""<Pointer>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Touch"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""c1f7a91b-d0fd-4a62-997e-7fb9b69bf235"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -251,17 +273,6 @@ namespace Controls
                 },
                 {
                     ""name"": """",
-                    ""id"": ""886e731e-7071-4ae4-95c0-e61739dad6fd"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Touch"",
-                    ""action"": ""Fire"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ee3d0cd2-254e-47a7-a8cb-bc94d9658c54"",
                     ""path"": ""<Joystick>/trigger"",
                     ""interactions"": """",
@@ -307,7 +318,7 @@ namespace Controls
                 {
                     ""name"": """",
                     ""id"": ""c601b038-e231-4e87-876f-f9777b9b5fa4"",
-                    ""path"": ""<Touchscreen>/primaryTouch"",
+                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Touch"",
