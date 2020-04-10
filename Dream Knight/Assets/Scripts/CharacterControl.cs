@@ -37,7 +37,7 @@ public class CharacterControl : MonoBehaviour
         // Load abilities from the database
         try {
             character = GameObject.Find("GameController").GetComponent<CharacterDatabase>().FetchCharacterById(typeID);
-            Debug.Log(character.title + "'s turn: " + character.myTurn);
+            //Debug.Log(character.title + "'s turn: " + character.myTurn);
         }
         catch {
             Debug.Log("Character with id " + typeID + " not found! By: " + gameObject.name);

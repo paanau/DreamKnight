@@ -48,7 +48,7 @@ namespace Controls
                     ""name"": ""Charge"",
                     ""type"": ""Value"",
                     ""id"": ""ae6502eb-9ecf-49a2-b5f6-6bdf0913735a"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -197,21 +197,10 @@ namespace Controls
                 {
                     ""name"": """",
                     ""id"": ""13c62173-a664-467e-88e1-dd542c67cc4f"",
-                    ""path"": ""<Touchscreen>/primaryTouch/radius"",
-                    ""interactions"": ""Hold"",
-                    ""processors"": """",
-                    ""groups"": ""Touch;Keyboard&Mouse"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5391e424-63cb-4a35-afd2-7221ffa0b2fe"",
-                    ""path"": ""<Pointer>/delta"",
+                    ""path"": ""<Touchscreen>/primaryTouch/delta"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Touch"",
+                    ""groups"": ""Touch"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -318,7 +307,7 @@ namespace Controls
                 {
                     ""name"": """",
                     ""id"": ""c601b038-e231-4e87-876f-f9777b9b5fa4"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""path"": ""<Touchscreen>/primaryTouch"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Touch"",

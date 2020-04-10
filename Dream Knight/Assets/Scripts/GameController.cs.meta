@@ -3,7 +3,14 @@ guid: a87effad9c2f36143a63a41b07d82da3
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerCharacter: {instanceID: 0}
+  - mainCamera: {instanceID: 0}
+  - pauseSelectionUI: {instanceID: 0}
+  - enemyPrefab: {fileID: 4749821695297356604, guid: 10f6a209fc72c124a920fc400f4bff20,
+      type: 3}
+  - experienceOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

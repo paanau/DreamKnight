@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using LitJson;
 
 public class GameController : MonoBehaviour
 {
@@ -15,8 +16,9 @@ public class GameController : MonoBehaviour
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
     private List<GameObject> enemies = new List<GameObject>();
-    private int test;
+    private int test, swipeSensitivity = 250;
     private Vector2 touchDelta;
+    public TextAsset abilitiesJSON, charactersJSON, itemsJSON;
 
     void Awake(){
 
@@ -271,14 +273,21 @@ public class GameController : MonoBehaviour
     public void OnCharge()
     {
         test++;
-        GameObject.Find("Test").GetComponent<TextMesh>().text = test.ToString() + " + " + touchDelta.magnitude;
-        chargeButton = !chargeButton;
-
+        //GameObject.Find("Test").GetComponent<TextMesh>().text = test.ToString() + " + " + touchDelta.magnitude;
+        if (Touchscreen.current.primaryTouch.isInProgress)
+        {
+            chargeButton = true;
+        }
+        else
+        {
+            chargeButton = false;
+        }
+        
         if (gameActive)
         {
             if (!chargeButton && chargeActive)
             {
-                if (touchDelta.magnitude >= 100)
+                if (touchDelta.magnitude >= swipeSensitivity)
                 {
                     CalculateDelta();
                 }
@@ -286,6 +295,7 @@ public class GameController : MonoBehaviour
                 {
                     //PauseForAbility();
                 }
+                touchDelta = Vector2.zero;
             }
             
         }
@@ -293,8 +303,6 @@ public class GameController : MonoBehaviour
         {
             OnRestart();
         }
-
-        touchDelta = Vector2.zero;
     }
 
     public void OnRestart()

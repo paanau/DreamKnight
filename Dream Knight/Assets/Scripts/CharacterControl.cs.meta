@@ -3,7 +3,14 @@ guid: fd5ad92733239e540ad63d076069e90f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - projectilePrefab: {fileID: 1589657863535395054, guid: 490513923fec4f74a9540cc1f96fd5e9,
+      type: 3}
+  - effectCircle: {fileID: 4792370087414859140, guid: 9d7050da4e4f1c14b9c29009751f9137,
+      type: 3}
+  - healthBar: {fileID: 740658809127483, guid: 0c6df71e535d9ec4f838ef41c54ab260, type: 3}
+  - xpOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

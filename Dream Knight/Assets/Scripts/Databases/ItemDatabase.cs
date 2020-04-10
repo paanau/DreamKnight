@@ -7,11 +7,18 @@ using System.IO;
 public class ItemDatabase : MonoBehaviour {
 	private List<Item> database = new List<Item>();
 	private JsonData itemData;
+    private string path;
 
-	void Start()
+    void Start()
 	{
-		itemData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Items.json"));
-		ConstructItemDatabase();	
+        path = "jar:file://" + Application.dataPath + "!/assets/";
+        //#if UNITY_EDITOR
+        //        characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
+        //#elif UNITY_ANDROID
+        //        characterData = JsonMapper.ToObject(File.ReadAllText(path + "/Characters.json"));
+        //#endif
+        itemData = JsonMapper.ToObject(GameObject.Find("GameController").GetComponent<GameController>().itemsJSON.text);
+        ConstructItemDatabase();	
 
        //DEMO 
        //Debug.Log("My inventory:");

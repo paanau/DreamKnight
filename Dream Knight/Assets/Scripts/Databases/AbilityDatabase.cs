@@ -8,11 +8,18 @@ public class AbilityDatabase : MonoBehaviour
 {
     private List<Ability> database = new List<Ability>();
     private JsonData abilityData;
-    
+    private string path;
+
     // Start is called before the first frame update
     void Awake()
     {
-        abilityData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Abilities.json"));
+        path = "jar:file://" + Application.dataPath + "!/assets/";
+        //#if UNITY_EDITOR
+        //        characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
+        //#elif UNITY_ANDROID
+        //        characterData = JsonMapper.ToObject(File.ReadAllText(path + "/Characters.json"));
+        //#endif
+        abilityData = JsonMapper.ToObject(GameObject.Find("GameController").GetComponent<GameController>().abilitiesJSON.text);
         ConstructAbilityDatabase();
 
         //DEMO 

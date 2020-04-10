@@ -7,12 +7,22 @@ using System.IO;
 public class CharacterDatabase : MonoBehaviour {
 	private List<Character> database = new List<Character>();
 	private JsonData characterData;
+    private string path;
 
-	void Awake()
+    void Awake()
 	{
-        characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
-		ConstructCharacterDatabase();
-        Debug.Log(characterData);
+//        path = "jar:file://" + Application.dataPath + "!/assets/";
+//#if UNITY_EDITOR
+//        characterData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Characters.json"));
+//#elif UNITY_ANDROID
+//        characterData = JsonMapper.ToObject(File.ReadAllText(path + "/Characters.json"));
+//#endif
+        characterData = JsonMapper.ToObject(GameObject.Find("GameController").GetComponent<GameController>().charactersJSON.text);
+
+        //Debug.Log(Resources.Load<TextAsset>("/Characters").text);
+        //characterData = JsonMapper.ToObject(File.ReadAllText(Resources.Load<TextAsset>("/Characters.json").text));
+        ConstructCharacterDatabase();
+        //Debug.Log(characterData);
        //DEMO 
        //Debug.Log("My characters:");
        foreach(Character i in database)
