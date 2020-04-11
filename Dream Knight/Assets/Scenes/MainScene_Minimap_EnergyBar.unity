@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -402,9 +402,9 @@ MonoBehaviour:
     type: 3}
   experienceOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba,
     type: 3}
-  abilitiesJSON: {fileID: 4900000, guid: d758e265ed7f166449ae55a43267ff98, type: 3}
-  charactersJSON: {fileID: 4900000, guid: b0fcd4462aaa6e844a59b4f104c814ec, type: 3}
-  itemsJSON: {fileID: 4900000, guid: a32d3fb010439514bbc2f7087c51362c, type: 3}
+  abilitiesJSON: {fileID: 4900000, guid: 7d94c8e7366a68443be3b17bcf78ac77, type: 3}
+  charactersJSON: {fileID: 4900000, guid: 8f6f7bef1482a2b4fa70ef6b87fecdb9, type: 3}
+  itemsJSON: {fileID: 4900000, guid: a5310d1c213d7a6489b536da0befc2e7, type: 3}
 --- !u!4 &419819844
 Transform:
   m_ObjectHideFlags: 0
