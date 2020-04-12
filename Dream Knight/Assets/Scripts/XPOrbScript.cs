@@ -8,17 +8,16 @@ public class XPOrbScript : MonoBehaviour
     private float timeElapsed, speed;
     private ParticleSystem.Particle[] particles;
     private CharacterControl player;
-    private int[] values;
-    private int value;
+    private int value, size;
+
     // Start is called before the first frame update
     void Awake()
     {
         ps = GetComponent<ParticleSystem>();
-        int size = ps.emission.GetBurst(0).maxCount;
+        size = ps.emission.GetBurst(0).maxCount;
         particles = new ParticleSystem.Particle[size];
         speed = Random.Range(0.05f, 0.13f);
         player = GameObject.Find("Character").GetComponent<CharacterControl>();
-        values = new int[size];
     }
 
     // Update is called once per frame
@@ -31,14 +30,20 @@ public class XPOrbScript : MonoBehaviour
             Vector3 playerPosition = player.transform.position;
             for (int i = 0; i < particles.Length; i++)
             {
-                particles[i].position = Vector3.MoveTowards(particles[i].position, playerPosition, speed);
+                particles[i].position = Vector3.MoveTowards(particles[i].position, playerPosition, speed*timeElapsed);
                 if (Vector3.Distance(particles[i].position, playerPosition) < 0.2f)
                 {
-                    particles[i].remainingLifetime = 0;
-                    player.GrantExperience(values[i]);
+                    particles[i].remainingLifetime = -1;
+                    particles[i].startSize = 0;
+                    if (size > 0)
+                    {
+                        player.GrantExperience(value);
+                        size--;
+                    }
                 }
             }
             ps.SetParticles(particles);
+            if (particles.Length == 0) { Destroy(gameObject); }
         }
     }
 
@@ -46,25 +51,33 @@ public class XPOrbScript : MonoBehaviour
     {
         player = GameObject.Find("Character").GetComponent<CharacterControl>();
         ps = GetComponent<ParticleSystem>();
-        int size = ps.emission.GetBurst(0).maxCount;
+        size = 0;
+        for (int i = 15; i < 51; i++)
+        {
+            size = experience % i == 0 ? i : size;
+            if (size != 0) break; 
+            if (i == 50)
+            {
+                size = 50;
+                experience = Mathf.FloorToInt((float)experience / size) * size;
+            }
+        }
         particles = new ParticleSystem.Particle[size];
         speed = Random.Range(0.05f, 0.13f);
-        values = new int[size];
-        int addOne = 0;
-        float experiencePerOrb = (float)value / (float)size;
-        int minXP = Mathf.FloorToInt(experiencePerOrb);
-        addOne = Mathf.FloorToInt(experiencePerOrb - minXP);
+        value = experience / size;
+        
+        ParticleSystem.Burst b = ps.emission.GetBurst(0);
+        b.minCount = (short)size;
+        b.maxCount = (short)size;
+        b.count = size;
+        ps.emission.SetBurst(0, b);
+
         ps.GetParticles(particles);
         for (int i = 0; i < size; i++)
         {
-            values[i] = minXP;
-            if (addOne > 0)
-            {
-                values[i]++;
-                addOne--;
-            }
-            particles[i].startSize = 0.4f + 0.01f * values[i];
+            particles[i].startSize = 0.4f + 0.01f * value;
         }
+        
         ps.SetParticles(particles);
     }
 }

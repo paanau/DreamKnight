@@ -7,6 +7,7 @@ public class CharacterControl : MonoBehaviour
     public int charTypeID = 0;
     public Character character = null;
     private GameObject gameController;
+    private CharacterControl meleeTarget;
     private Animator myAnimator;
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
@@ -63,6 +64,11 @@ public class CharacterControl : MonoBehaviour
         resistance = character.resistance;
 
         InitialiseAbilities(typeID);
+
+        if (typeID > 0)
+        {
+            gameObject.name = title;
+        }
     }
 
     public void InitialiseAbilities(int charID)
@@ -81,25 +87,16 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (myTurn && isAlive && !inCombat)
+        if (myTurn && isAlive)
         {
-            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
-            if (hit.collider != null && hit.collider.gameObject != gameObject)
+            if (!inCombat)
             {
-                Debug.Log(hit.collider.gameObject.name);
-                if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
+                if (!waiting)
                 {
-                    waiting = true;
-                }
-                else
-                {
-                    inCombat = true;
-                    main.InitiateCombat(gameObject, hit.collider.gameObject);
-                    //myAnimator.SetTrigger("enterCombat");
-                    myAnimator.speed = 1f / attackCooldown;
+                    AdvanceMe();
+                    ScanForTarget();
                 }
             }
-            ManageAbilities();
         }
         EffectTick();
     }
@@ -127,6 +124,49 @@ public class CharacterControl : MonoBehaviour
         return baseDamage * damageModifiers;
     }
 
+    public void MeleeCombat(GameObject target)
+    {
+        meleeTarget = target.GetComponent<CharacterControl>();
+        StartCoroutine(Mettle());
+    }
+
+    IEnumerator Mettle()
+    {
+        while (isAlive && meleeTarget.IsAlive())
+        {
+            float damage = DamageDealt();
+            //if (main.playerTurn) { damage *= rushDamageBoost; }
+            int critDegree = 1;
+            float toHit = GetHitChance();
+            float evade = meleeTarget.GetEvasion();
+            float roll = Random.Range(0, 100);
+            if (toHit + roll >= evade) // 50 + 90 >= 10
+            {
+                for (int i = 1; i < 5; i++)
+                {
+                    if (toHit + roll >= i * 100) // 140 >= 0, 100
+                    {
+                        critDegree *= 2;
+                    }
+                }
+                damage *= critDegree;
+                if (!meleeTarget.DamageTaken(damage, critDegree)) // Hit
+                {
+                    main.EndCombat(meleeTarget);
+                    meleeTarget.EndCombat();
+                    EndCombat();
+                }
+            }
+            else
+            {
+                damage = 0;
+                // Miss
+            }
+            //meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
+            yield return new WaitForSeconds(attackCooldown);
+        }
+    }
+
     public bool DamageTaken(float damage, int crit)
     {
         if (shieldHealth > 0)
@@ -151,7 +191,7 @@ public class CharacterControl : MonoBehaviour
         StartCoroutine(FlashOnHit(damage, crit));
         SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
         SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
-        if (currentHP <= 0)
+        if (currentHP <= 0 && isAlive)
         {
             // Death happens here
             Death();
@@ -159,6 +199,29 @@ public class CharacterControl : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private void ScanForTarget()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
+        if (hit.collider != null && hit.collider.gameObject != gameObject)
+        {
+            Debug.Log(hit.collider.gameObject.name);
+            if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
+            {
+                waiting = true;
+            }
+            else
+            {
+                inCombat = true;
+                MeleeCombat(hit.collider.gameObject);
+                meleeTarget = hit.collider.gameObject.GetComponent<CharacterControl>();
+                meleeTarget.MeleeCombat(gameObject);
+                main.InitiateCombat(gameObject, hit.collider.gameObject);
+                //myAnimator.SetTrigger("enterCombat");
+                myAnimator.speed = 1f / attackCooldown;
+            }
+        }
     }
 
     private void CriticalDeath()
@@ -170,9 +233,14 @@ public class CharacterControl : MonoBehaviour
     {
         if (character.id != 0) StartCoroutine(BurstIntoTreats());
         else main.GameOver();
-
-        GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
-        ps.GetComponent<XPOrbScript>().Initialise(character.experience);
+        if (isAlive)
+        {
+            GetComponent<BoxCollider2D>().enabled = false;
+            main.EndCombat(GetComponent<CharacterControl>());
+            //GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
+            //ps.GetComponent<XPOrbScript>().Initialise(experience);
+            isAlive = false;
+        }
     }
 
     IEnumerator BurstIntoTreats()
@@ -187,40 +255,31 @@ public class CharacterControl : MonoBehaviour
         transform.position = new Vector3(0, -100, 0);
         transform.localScale = size;
         healthBar.GetComponent<Canvas>().enabled = true;
-        yield return null;
     }
 
     IEnumerator FlashOnHit(float damage, int crit)
     {
         SpriteRenderer toFlash = GetComponent<SpriteRenderer>();
-        float flash = 1 - (damage * 2 / baseMaxHP);
+        float flash = 0.5f;
         toFlash.color = new Color(1,flash,flash);
-        Debug.Log("I am " + title + " and I am flashing to " + toFlash.color);
         yield return new WaitForSeconds(crit * 0.05f);
         toFlash.color = Color.white;
     }
 
     public void GrantExperience(int newXP)
     {
-        experience += newXP;
+        if (newXP > 0)
+        {
+            experience += newXP;
+            main.UpdateExperience(newXP);
+        }
     }
 
-    public void WonCombat()
-    {
-        EndCombat();
-    }
-
-    public void LostCombat()
-    {
-        EndCombat();
-        GetComponent<BoxCollider2D>().enabled = false;
-        transform.position = new Vector2(transform.position.x, 0);
-        isAlive = false;
-    }
-
-    private void EndCombat()
+    public void EndCombat()
     {
         inCombat = false;
+        StopCoroutine(Mettle());
+
         //myAnimator.SetTrigger("leaveCombat");
     }
 
@@ -335,11 +394,16 @@ public class CharacterControl : MonoBehaviour
         //myAnimator.SetTrigger("idle");
     }
 
-    public void AdvanceMe(float modifiers)
+    public void AdvanceMe()
     {
         //myAnimator.SetTrigger("move");
-        transform.Translate(0.1f * modifiers * speedModifiers * baseSpeed * directionModifier, 0, 0);
-        myAnimator.speed = modifiers * baseSpeed + 1;
+        transform.Translate(0.1f * (speedModifiers * baseSpeed * directionModifier + baseSpeed), 0, 0);
+        myAnimator.speed = speedModifiers * baseSpeed + 1;
+    }
+
+    public void AdvanceModifiers(float modifiers)
+    {
+        speedModifiers = modifiers;
     }
 
     public bool CanAdvance()
@@ -374,13 +438,13 @@ public class CharacterControl : MonoBehaviour
         Ability ab = SelectAbility(dir);
         if (dir == "Ranged")
         {
-            Debug.Log("UA: " + ab.Debug());
             GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.GiveSettings(new Ability(ab));
             ps.SetAnimationSpeed(gameRunSpeed);
             
         }
+        Debug.Log("UA: " + ab.Debug());
         return ab.energyCost;
     }
 
@@ -395,89 +459,7 @@ public class CharacterControl : MonoBehaviour
             return new Ability();
         }
     }
-
-    private void ManageAbilities()
-    {
-        if (speedModifiers > 1)
-        {
-            speedModifiers -= Time.deltaTime * gameRunSpeed;
-        }
-        else
-        {
-            speedModifiers = 1;
-        }
-        if (damageModifiers > 1)
-        {
-            damageModifiers -= Time.deltaTime * gameRunSpeed;
-        }
-        else
-        {
-            damageModifiers = 1;
-        }
-
-        //if (speedModifiers > 1 || damageModifiers > 1 || shieldHealth > 0)
-        //{
-        //    float speedParticles = (speedModifiers - 1) * 10;
-        //    float shieldParticles = shieldHealth / 5;
-        //    float damageParticles = (damageModifiers - 1) * 2;
-        //    float totalParticleCount = speedParticles + shieldParticles + damageParticles;
-
-        //    float[] particleFloats = { speedParticles, shieldParticles, damageParticles };
-
-        //    ParticleSystem ps = effectCircle.GetComponent<ParticleSystem>();
-        //    var emis = ps.emission;
-        //    emis.rateOverTime = Mathf.FloorToInt(totalParticleCount);
-
-        //    var psmain = ps.main;
-        //    Color[] assignableColours = { Color.green, Color.blue, Color.red };
-
-            
-
-        //    Gradient newGradient = new Gradient();
-        //    GradientColorKey[] colorKey = new GradientColorKey[3];
-        //    GradientAlphaKey[] alphaKey = new GradientAlphaKey[3];
-        //    float runningTally = 0;
-        //    for (int i = 0; i < particleFloats.Length; i++)
-        //    {
-        //        if (particleFloats[i] > 0)
-        //        {
-        //            colorKey[i].time = (particleFloats[i] + runningTally) / totalParticleCount;
-        //            colorKey[i].color = assignableColours[i];
-        //            alphaKey[i].alpha = 1;
-        //            alphaKey[i].time = (particleFloats[i] + runningTally) / totalParticleCount;
-        //            runningTally += particleFloats[i];
-        //        }
-        //        else
-        //        {
-        //            colorKey[i].time = (float)i / 2;
-        //            colorKey[i].color = newGradient.Evaluate((float)i / 2);
-        //            alphaKey[i].alpha = 1;
-        //            alphaKey[i].time = (float)i / 2;
-        //        }
-        //    }
-        //    newGradient.SetKeys(colorKey, alphaKey);
-        //    psmain.startColor = newGradient;
-
-        //    //float pstime = ps.time * 10;
-        //    //if (pstime > 1)
-        //    //{
-        //    //    pstime -= Mathf.Floor(pstime);
-        //    //}
-        //    //if (pstime < speedParticles / totalParticleCount)
-        //    //{
-        //    //    psmain.startColor = assignableColours[0];
-        //    //}
-        //    //else if (pstime < (shieldParticles + speedParticles) / totalParticleCount)
-        //    //{
-        //    //    psmain.startColor = assignableColours[1];
-        //    //}
-        //    //else
-        //    //{
-        //    //    psmain.startColor = assignableColours[2];
-        //    //}
-
-        //}
-    }
+    
 
     private void AddParticlesToEffectCircle(int category, int amount)
     {
@@ -493,15 +475,18 @@ public class CharacterControl : MonoBehaviour
         healthbarComponents = new GameObject[healthBar.transform.childCount];
         for (int i = 0; i < healthBar.transform.childCount; i++)
         {
-            healthbarComponents[i] = healthBar.transform.GetChild(i).gameObject;
+            healthbarComponents[i] = healthBar.transform.GetChild(i).gameObject;            
         }
+        SetHealthBar("barHealth", 1, 0);
+        SetHealthBar("barDamage", 1, 0);
+        SetHealthBar("barBackground", 1, 0);
     }
 
     private void SetHealthBar(string name, float newValue, float speed)
     {
         foreach (GameObject bar in healthbarComponents)
         {
-            if (bar.name == name || name == "all")
+            if (bar.name.Equals(name) || name.Equals("all"))
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
             }
