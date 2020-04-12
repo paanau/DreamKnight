@@ -72,8 +72,6 @@ public class XPOrbScript : MonoBehaviour
         b.count = size;
         ps.emission.SetBurst(0, b);
 
-        Debug.Log("Bursting from " + ps.emission.GetBurst(0).minCount + " to " + ps.emission.GetBurst(0).maxCount);
-
         ps.GetParticles(particles);
         for (int i = 0; i < size; i++)
         {
