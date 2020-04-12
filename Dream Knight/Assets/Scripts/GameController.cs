@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using LitJson;
 
 public class GameController : MonoBehaviour
 {
-    private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
+    [SerializeField] private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
     private bool chargeButton, slowdownActive;
     public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
@@ -16,11 +18,13 @@ public class GameController : MonoBehaviour
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
     private List<GameObject> enemies = new List<GameObject>();
-    private int test, swipeSensitivity = 250;
+    private int test, swipeSensitivity = 250, playerExperience, newExperience;
     private Vector2 touchDelta;
     public TextAsset abilitiesJSON, charactersJSON, itemsJSON;
 
     void Awake(){
+
+        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
 
         SpawnCharacters();
 
@@ -171,7 +175,7 @@ public class GameController : MonoBehaviour
                 damage *= critDegree;
                 if (!currentMeleeTargetController.DamageTaken(damage, critDegree)) // Hit
                 {
-                    EndCombat();
+                    EndCombat(currentMeleeTargetController);
                     playerController.WonCombat();
                     currentMeleeTargetController.LostCombat();
                     targetAttackCooldown = 999f;
@@ -206,7 +210,7 @@ public class GameController : MonoBehaviour
                 damage *= critDegree;
                 if (!playerController.DamageTaken(damage, critDegree))
                 {
-                    EndCombat();
+                    EndCombat(currentMeleeTargetController);
                     playerController.LostCombat();
                     currentMeleeTargetController.WonCombat();
                     PlayerDied();
@@ -223,9 +227,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void EndCombat()
+    public void EndCombat(CharacterControl cc)
     {
-        inCombat = false;
+        if (cc.Equals(currentMeleeTargetController))
+        {
+            inCombat = false;
+            playerController.WonCombat();
+        }
     }
 
     private void StartPlayerTurn()
@@ -272,22 +280,31 @@ public class GameController : MonoBehaviour
 
     public void OnCharge()
     {
-        test++;
-        //GameObject.Find("Test").GetComponent<TextMesh>().text = test.ToString() + " + " + touchDelta.magnitude;
-        if (Touchscreen.current.primaryTouch.isInProgress)
+        //Debug.Log(Touch.activeFingers.Count);
+        Touch.onFingerDown += ctx =>
         {
             chargeButton = true;
-        }
-        else
+            touchDelta = Vector2.zero;
+        };
+        Touch.onFingerUp += ctx =>
         {
             chargeButton = false;
-        }
+            foreach (Touch t in Touch.activeTouches) if (t.isInProgress) chargeButton = true;
+        };
+        //if (Touch.activeFingers.Count != 0)
+        //{
+        //    chargeButton = true;
+        //}
+        //else
+        //{
+        //    chargeButton = false;
+        //}
         
         if (gameActive)
         {
             if (!chargeButton && chargeActive)
             {
-                if (touchDelta.magnitude >= swipeSensitivity)
+                if (touchDelta.magnitude >= 1) //swipeSensitivity)
                 {
                     CalculateDelta();
                 }
@@ -295,7 +312,7 @@ public class GameController : MonoBehaviour
                 {
                     //PauseForAbility();
                 }
-                touchDelta = Vector2.zero;
+                
             }
             
         }
@@ -318,6 +335,11 @@ public class GameController : MonoBehaviour
     public void OnMove(InputValue iv)
     {
         touchDelta += iv.Get<Vector2>();
+    }
+
+    public void OnMove()
+    {
+        touchDelta += Pointer.current.delta.ReadValue();
     }
 
     private void CalculateDelta()
@@ -509,6 +531,35 @@ public class GameController : MonoBehaviour
     //        TogglePauseSelectionUI(false);
     //    }
     //}
+
+    public void UpdateExperience(int xp)
+    {
+        if (playerExperience == newExperience) StartCoroutine(ExperienceTick(xp));
+        else newExperience += xp;
+    }
+
+    IEnumerator ExperienceTick(int xp)
+    {
+        newExperience = playerExperience + xp;
+        TextMesh XPCount = GameObject.Find("XPCount").GetComponent<TextMesh>();
+        while (xp > 0)
+        {
+            xp = newExperience - playerExperience;
+            Debug.Log(playerExperience + " XP plus " + xp + "/" + xp / 5 + " toward " + newExperience);
+            if (xp > 10)
+            {
+                playerExperience += xp / 5;
+                xp -= xp / 5;
+            }
+            else
+            {
+                playerExperience += 1;
+                xp -= 1;
+            }
+            XPCount.text = "XP: " + playerExperience;
+            yield return null;
+        }
+    }
 
     private void ActivateEnemies()
     {

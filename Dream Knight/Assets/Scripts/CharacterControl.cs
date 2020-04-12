@@ -6,7 +6,7 @@ public class CharacterControl : MonoBehaviour
 {
     public int charTypeID = 0;
     public Character character = null;
-    private GameObject gameController;
+    private GameObject gameController, meleeTarget;
     private Animator myAnimator;
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
@@ -63,6 +63,11 @@ public class CharacterControl : MonoBehaviour
         resistance = character.resistance;
 
         InitialiseAbilities(typeID);
+
+        if (typeID > 0)
+        {
+            gameObject.name = title;
+        }
     }
 
     public void InitialiseAbilities(int charID)
@@ -94,7 +99,7 @@ public class CharacterControl : MonoBehaviour
                 else
                 {
                     inCombat = true;
-                    main.InitiateCombat(gameObject, hit.collider.gameObject);
+                    //main.InitiateCombat(gameObject, hit.collider.gameObject);
                     //myAnimator.SetTrigger("enterCombat");
                     myAnimator.speed = 1f / attackCooldown;
                 }
@@ -127,6 +132,11 @@ public class CharacterControl : MonoBehaviour
         return baseDamage * damageModifiers;
     }
 
+    public void MeleeCombat(GameObject target)
+    {
+
+    }
+
     public bool DamageTaken(float damage, int crit)
     {
         if (shieldHealth > 0)
@@ -151,7 +161,7 @@ public class CharacterControl : MonoBehaviour
         StartCoroutine(FlashOnHit(damage, crit));
         SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
         SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
-        if (currentHP <= 0)
+        if (currentHP <= 0 && isAlive)
         {
             // Death happens here
             Death();
@@ -170,9 +180,13 @@ public class CharacterControl : MonoBehaviour
     {
         if (character.id != 0) StartCoroutine(BurstIntoTreats());
         else main.GameOver();
-
-        GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
-        ps.GetComponent<XPOrbScript>().Initialise(character.experience);
+        if (isAlive)
+        {
+            main.EndCombat(GetComponent<CharacterControl>());
+            GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
+            ps.GetComponent<XPOrbScript>().Initialise(experience);
+            isAlive = false;
+        }
     }
 
     IEnumerator BurstIntoTreats()
@@ -187,22 +201,24 @@ public class CharacterControl : MonoBehaviour
         transform.position = new Vector3(0, -100, 0);
         transform.localScale = size;
         healthBar.GetComponent<Canvas>().enabled = true;
-        yield return null;
     }
 
     IEnumerator FlashOnHit(float damage, int crit)
     {
         SpriteRenderer toFlash = GetComponent<SpriteRenderer>();
-        float flash = 1 - (damage * 2 / baseMaxHP);
+        float flash = 0.5f;
         toFlash.color = new Color(1,flash,flash);
-        Debug.Log("I am " + title + " and I am flashing to " + toFlash.color);
         yield return new WaitForSeconds(crit * 0.05f);
         toFlash.color = Color.white;
     }
 
     public void GrantExperience(int newXP)
     {
-        experience += newXP;
+        if (newXP > 0)
+        {
+            experience += newXP;
+            main.UpdateExperience(newXP);
+        }
     }
 
     public void WonCombat()
@@ -374,13 +390,13 @@ public class CharacterControl : MonoBehaviour
         Ability ab = SelectAbility(dir);
         if (dir == "Ranged")
         {
-            Debug.Log("UA: " + ab.Debug());
             GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.GiveSettings(new Ability(ab));
             ps.SetAnimationSpeed(gameRunSpeed);
             
         }
+        Debug.Log("UA: " + ab.Debug());
         return ab.energyCost;
     }
 
