@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HealthBarScript : MonoBehaviour
 {
-    private float oldSize, newSize, changeVelocity, changeProgress, changeSize, scaleMultiplier;
+    private float oldSize, newSize, changeVelocity, changeProgress, changeSize, scaleMultiplier = 2.9f;
     private Vector3 mySize;
     private bool changingSize;
 
@@ -45,7 +45,7 @@ public class HealthBarScript : MonoBehaviour
         newSize = target;
         if (changeSpeed == 0)
         {
-            transform.localScale = new Vector3(newSize, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(newSize*scaleMultiplier, transform.localScale.y, transform.localScale.z);
         }
         if (newSize > 1)
         {

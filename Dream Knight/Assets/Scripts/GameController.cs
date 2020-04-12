@@ -111,7 +111,7 @@ public class GameController : MonoBehaviour
 
     private void SpawnCharacters()
     {
-        for (int i = 1; i < 20; i++)
+        for (int i = 1; i < 10; i++)
         {
             GameObject newEnemy = Instantiate(enemyPrefab, new Vector3(i*20, 0, 0), Quaternion.identity);
             newEnemy.name = "Enemy " + i;
@@ -207,41 +207,35 @@ public class GameController : MonoBehaviour
 
     public void OnCharge()
     {
-        //Debug.Log(Touch.activeFingers.Count);
-        Touch.onFingerDown += ctx =>
-        {
-            chargeButton = true;
-            touchDelta = Vector2.zero;
-        };
-        Touch.onFingerUp += ctx =>
-        {
-            chargeButton = false;
-            foreach (Touch t in Touch.activeTouches) if (t.isInProgress) chargeButton = true;
-        };
-        //if (Touch.activeFingers.Count != 0)
-        //{
-        //    chargeButton = true;
-        //}
-        //else
-        //{
-        //    chargeButton = false;
-        //}
-        
         if (gameActive)
         {
-            if (!chargeButton && chargeActive)
+            //Debug.Log(Touch.activeFingers.Count);
+            Touch.onFingerDown += ctx =>
             {
-                if (touchDelta.magnitude >= swipeSensitivity)
+                chargeButton = true;
+                touchDelta = Vector2.zero;
+            };
+            Touch.onFingerUp += ctx =>
+            {
+                chargeButton = false;
+                foreach (Touch t in Touch.activeTouches)
                 {
-                    CalculateDelta();
+                    if (t.isInProgress) chargeButton = true;
+
+                    if (!chargeButton && chargeActive)
+                    {
+                        if (touchDelta.magnitude >= swipeSensitivity)
+                        {
+                            CalculateDelta();
+                        }
+                        else
+                        {
+                            //PauseForAbility();
+                        }
+
+                    }
                 }
-                else
-                {
-                    //PauseForAbility();
-                }
-                
-            }
-            
+            };
         }
         else
         {

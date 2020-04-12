@@ -162,7 +162,7 @@ public class CharacterControl : MonoBehaviour
                 damage = 0;
                 // Miss
             }
-            meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
+            //meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
             yield return new WaitForSeconds(attackCooldown);
         }
     }
@@ -278,6 +278,8 @@ public class CharacterControl : MonoBehaviour
     public void EndCombat()
     {
         inCombat = false;
+        StopCoroutine(Mettle());
+
         //myAnimator.SetTrigger("leaveCombat");
     }
 
@@ -395,7 +397,7 @@ public class CharacterControl : MonoBehaviour
     public void AdvanceMe()
     {
         //myAnimator.SetTrigger("move");
-        transform.Translate(0.1f * speedModifiers * baseSpeed * directionModifier, 0, 0);
+        transform.Translate(0.1f * (speedModifiers * baseSpeed * directionModifier + baseSpeed), 0, 0);
         myAnimator.speed = speedModifiers * baseSpeed + 1;
     }
 
@@ -473,15 +475,18 @@ public class CharacterControl : MonoBehaviour
         healthbarComponents = new GameObject[healthBar.transform.childCount];
         for (int i = 0; i < healthBar.transform.childCount; i++)
         {
-            healthbarComponents[i] = healthBar.transform.GetChild(i).gameObject;
+            healthbarComponents[i] = healthBar.transform.GetChild(i).gameObject;            
         }
+        SetHealthBar("barHealth", 1, 0);
+        SetHealthBar("barDamage", 1, 0);
+        SetHealthBar("barBackground", 1, 0);
     }
 
     private void SetHealthBar(string name, float newValue, float speed)
     {
         foreach (GameObject bar in healthbarComponents)
         {
-            if (bar.name == name || name == "all")
+            if (bar.name.Equals(name) || name.Equals("all"))
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
             }
