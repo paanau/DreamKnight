@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
     private int test, swipeSensitivity = 250, playerExperience, newExperience;
     private Vector2 touchDelta;
     public TextAsset abilitiesJSON, charactersJSON, itemsJSON;
+    private TextMesh xpcount;
 
     void Awake(){
 
@@ -44,6 +45,7 @@ public class GameController : MonoBehaviour
 
         playerController = playerCharacter.GetComponent<CharacterControl>();
         playerController.SetGameController(gameObject);
+        xpcount = GameObject.Find("XPCount").GetComponent<TextMesh>();
 
         StartPlayerTurn();
     }
@@ -65,6 +67,8 @@ public class GameController : MonoBehaviour
         playerDepleteRate = 10;
         enemyDepleteRate = 20;
         gameRunSpeed = 1f;
+
+        
     }
 
     // Update is called once per frame
@@ -212,28 +216,34 @@ public class GameController : MonoBehaviour
             //Debug.Log(Touch.activeFingers.Count);
             Touch.onFingerDown += ctx =>
             {
-                chargeButton = true;
-                touchDelta = Vector2.zero;
+                if (ctx.currentTouch.isInProgress)
+                {
+                    chargeButton = true;
+                    touchDelta = Vector2.zero;
+                }
             };
             Touch.onFingerUp += ctx =>
             {
                 chargeButton = false;
-                foreach (Touch t in Touch.activeTouches)
+                if (ctx.currentTouch.isInProgress)
                 {
-                    if (t.isInProgress) chargeButton = true;
-
-                    if (!chargeButton && chargeActive)
+                    chargeButton = true;
+                }
+                //foreach (Touch t in Touch.activeTouches)
+                //{
+                //    if (t.isInProgress) chargeButton = true;
+                //}
+                if (!chargeButton && chargeActive)
+                {
+                    if (touchDelta.magnitude >= swipeSensitivity)
                     {
-                        if (touchDelta.magnitude >= swipeSensitivity)
-                        {
-                            CalculateDelta();
-                        }
-                        else
-                        {
-                            //PauseForAbility();
-                        }
-
+                        CalculateDelta();
                     }
+                    else
+                    {
+                        //PauseForAbility();
+                    }
+                    touchDelta = Vector2.zero;
                 }
             };
         }
@@ -445,6 +455,7 @@ public class GameController : MonoBehaviour
 
     public void UpdateExperience(int xp)
     {
+        xpcount = GameObject.Find("XPCount").GetComponent<TextMesh>();
         if (playerExperience == newExperience) StartCoroutine(ExperienceTick(xp));
         else newExperience += xp;
     }
@@ -452,7 +463,6 @@ public class GameController : MonoBehaviour
     IEnumerator ExperienceTick(int xp)
     {
         newExperience = playerExperience + xp;
-        TextMesh XPCount = GameObject.Find("XPCount").GetComponent<TextMesh>();
         while (xp > 0)
         {
             xp = newExperience - playerExperience;
@@ -467,7 +477,7 @@ public class GameController : MonoBehaviour
                 playerExperience += 1;
                 xp -= 1;
             }
-            XPCount.text = "XP: " + playerExperience;
+            xpcount.text = "XP: " + playerExperience;
             yield return null;
         }
     }
