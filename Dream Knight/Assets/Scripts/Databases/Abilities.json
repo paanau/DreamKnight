@@ -33,7 +33,7 @@
 		"buffType": "add",
 		"strength": 100,
 		"duration": 0,
-		"durationType": "instantaneous"
+		"durationType": "instant"
     },
     {
         "id": 3,
@@ -42,7 +42,7 @@
 		"target": "self",
 		"energyCost": 300,
 		"buff": true,
-		"buffTarget": "attack",
+		"buffTarget": "damage",
 		"buffType": "multi",
 		"multi": 3,
 		"duration": 3,
@@ -55,12 +55,12 @@
 		"target": "self",
 		"energyCost": 300,
 		"buff": true,
-		"buffTarget": "defense",
+		"buffTarget": "evasion",
 		"buffType": "mixed",
 		"strength": 10,
 		"multi": 2,
 		"duration": 10,
-		"durationType": "time"
+		"durationType": "use"
 	},
 	{
 		"id": 1000,

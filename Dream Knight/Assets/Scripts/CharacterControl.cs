@@ -13,7 +13,7 @@ public class CharacterControl : MonoBehaviour
     private ParticleSystem.Particle[] effectParticles;
     private List<Ability> myAbilities = new List<Ability>();
     [SerializeField] private List<Ability> activeEffects = new List<Ability>();
-    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, hitchance, evasion, resistance, regen;
+    [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, evadeModifiers, hitchance, evasion, resistance, regen;
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
@@ -59,7 +59,8 @@ public class CharacterControl : MonoBehaviour
         directionModifier = character.directionModifier;
         gameRunSpeed = character.gameRunSpeed;
         speedModifiers = character.speedModifiers;
-        damageModifiers = character.damageModifiers;
+        damageModifiers = 1;
+        evadeModifiers = 1; // TODO adapt to levelling up et al.
         experience = character.experience;
         resistance = character.resistance;
 
@@ -116,11 +117,27 @@ public class CharacterControl : MonoBehaviour
 
     public float GetEvasion()
     {
-        return evasion;
+        if (activeEffects.Contains(activeEffects.Find(a => a.buffTarget.Equals("evasion"))))
+        {
+            evadeModifiers = TriggerEffect(activeEffects.Find(a => a.buffTarget.Equals("evasion")));
+        }
+        else
+        {
+            evadeModifiers = 1; // TODO: adapt to levelling up et al.
+        }
+        return evasion * evadeModifiers;
     }
 
     public float DamageDealt()
     {
+        if (activeEffects.Contains(activeEffects.Find(a => a.buffTarget.Equals("damage"))))
+        {
+            damageModifiers = TriggerEffect(activeEffects.Find(a => a.buffTarget.Equals("damage")));
+        }
+        else
+        {
+            damageModifiers = 1; // TODO: adapt to levelling up et al.
+        }
         return baseDamage * damageModifiers;
     }
 
@@ -169,36 +186,40 @@ public class CharacterControl : MonoBehaviour
 
     public bool DamageTaken(float damage, int crit)
     {
-        if (shieldHealth > 0)
+        if (isAlive)
         {
-            if (shieldHealth >= damage)
+            if (shieldHealth > 0)
             {
-                shieldHealth -= damage;
-                damage = 0;
+                if (shieldHealth >= damage)
+                {
+                    shieldHealth -= damage;
+                    damage = 0;
+                }
+                else
+                {
+                    damage -= Mathf.FloorToInt(shieldHealth);
+                    shieldHealth = 0;
+                }
+                SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
             }
-            else
+            //if (damage > baseMaxHP)
+            //{
+            //    CriticalDeath();
+            //}
+            currentHP -= damage;
+            StartCoroutine(FlashOnHit(damage, crit));
+            SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
+            SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
+            if (currentHP <= 0)
             {
-                damage -= Mathf.FloorToInt(shieldHealth);
-                shieldHealth = 0;
+                // Death happens here
+                Death();
+                inCombat = false;
+                return false;
             }
-            SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
+            return true;
         }
-        //if (damage > baseMaxHP)
-        //{
-        //    CriticalDeath();
-        //}
-        currentHP -= damage;
-        StartCoroutine(FlashOnHit(damage, crit));
-        SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
-        SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
-        if (currentHP <= 0 && isAlive)
-        {
-            // Death happens here
-            Death();
-            inCombat = false;
-            return false;
-        }
-        return true;
+        return false;
     }
 
     private void ScanForTarget()
@@ -259,11 +280,13 @@ public class CharacterControl : MonoBehaviour
 
     IEnumerator FlashOnHit(float damage, int crit)
     {
-        SpriteRenderer toFlash = GetComponent<SpriteRenderer>();
-        float flash = 0.5f;
-        toFlash.color = new Color(1,flash,flash);
-        yield return new WaitForSeconds(crit * 0.05f);
-        toFlash.color = Color.white;
+        foreach (SpriteRenderer toFlash in GetComponentsInChildren<SpriteRenderer>())
+        { 
+            float flash = 0.5f;
+            toFlash.color = new Color(1, flash, flash);
+            yield return new WaitForSeconds(crit * 0.05f);
+            toFlash.color = Color.white;
+        }
     }
 
     public void GrantExperience(int newXP)
@@ -303,17 +326,6 @@ public class CharacterControl : MonoBehaviour
         if (effect.buff)
         {
             activeEffects.Add(effect);
-            //switch(effect.buffTarget)
-            //{
-            //    case "health":
-            //        break;
-            //    case "defense":
-            //        break;
-            //    case "attack":
-            //        break;
-            //    case "shield":
-            //        break;
-            //}
         }
         else
         {
@@ -339,22 +351,60 @@ public class CharacterControl : MonoBehaviour
         activeEffects.RemoveAll(effect => effect.duration <= 0);
     }
 
-    public void TriggerEffect(Ability effect)
+    public float TriggerEffect(Ability effect)
     {
 
         switch(effect.buffTarget)
         {
             case "health":
-                if (effect.buffType == "add")
+                if (effect.buffType.Equals("add"))
                 {
                     if (effect.strength >= 0) { currentHP += effect.strength; } else { DamageTaken(-effect.strength, 1); }
                 }
                 SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
                 SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
                 Debug.Log(gameObject.name + " got " + effect.strength + " HP!");
-                break;
+                return 0;
+            case "evasion":
+                if (effect.buffType.Equals("add") || effect.buffType.Equals("multi"))
+                {
+                    evadeModifiers += effect.strength;
+                }
+
+                if (effect.buffType.Equals("multi") || effect.buffType.Equals("mixed"))
+                {
+                    evadeModifiers *= effect.multi;
+                }
+                return evadeModifiers;
+            case "damage":
+                if (effect.buffType.Equals("add") || effect.buffType.Equals("multi"))
+                {
+                    damageModifiers += effect.strength;
+                }
+
+                if (effect.buffType.Equals("multi") || effect.buffType.Equals("mixed"))
+                {
+                    damageModifiers *= effect.multi;
+                }
+                if (effect.durationType.Equals("use"))
+                {
+                    effect.duration--;
+                }
+                return damageModifiers;
+            case "shield":
+                if (effect.buffType.Equals("add") || effect.buffType.Equals("multi"))
+                {
+                    shieldHealth += effect.strength;
+                }
+
+                if (effect.buffType.Equals("multi") || effect.buffType.Equals("mixed"))
+                {
+                    shieldHealth *= effect.strength;
+                }
+                SetHealthBar("barShield", shieldHealth / baseMaxHP, 1f);
+                return 0;
             default:
-                break;
+                return 0;
         }
     }
 
@@ -428,9 +478,9 @@ public class CharacterControl : MonoBehaviour
     {
         myAnimator.speed = newSpeed * speedModifiers;
         gameRunSpeed = newSpeed * speedModifiers;
-        ParticleSystem myBloodLoss = GetComponent<ParticleSystem>();
-        var main = myBloodLoss.main;
-        main.simulationSpeed = newSpeed;
+        //ParticleSystem myBloodLoss = GetComponent<ParticleSystem>();
+        //var main = myBloodLoss.main;
+        //main.simulationSpeed = newSpeed;
     }
 
     public float UseAbility(string dir)
@@ -442,7 +492,13 @@ public class CharacterControl : MonoBehaviour
             ProjectileScript ps = projectile.GetComponent<ProjectileScript>();
             ps.GiveSettings(new Ability(ab));
             ps.SetAnimationSpeed(gameRunSpeed);
-            
+        }
+        if (ab.buff)
+        {
+            if (ab.target.Equals("self"))
+            {
+                ApplyEffect(new Ability(ab));
+            }
         }
         Debug.Log("UA: " + ab.Debug());
         return ab.energyCost;
