@@ -237,8 +237,8 @@ public class CharacterControl : MonoBehaviour
         {
             GetComponent<BoxCollider2D>().enabled = false;
             main.EndCombat(GetComponent<CharacterControl>());
-            //GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
-            //ps.GetComponent<XPOrbScript>().Initialise(experience);
+            GameObject ps = Instantiate(xpOrbs, transform.position, Quaternion.identity);
+            ps.GetComponent<XPOrbScript>().Initialise(experience);
             isAlive = false;
         }
     }
