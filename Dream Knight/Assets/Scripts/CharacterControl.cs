@@ -17,6 +17,7 @@ public class CharacterControl : MonoBehaviour
     [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
+    public bool readyToSpawn;
     [SerializeField] private GameObject projectilePrefab, effectCircle, healthBar, xpOrbs;
     private string title;
     private GameObject[] healthbarComponents;
@@ -63,7 +64,7 @@ public class CharacterControl : MonoBehaviour
         evadeModifiers = 1; // TODO adapt to levelling up et al.
         experience = character.experience;
         resistance = character.resistance;
-
+        readyToSpawn = false;
         InitialiseAbilities(typeID);
 
         if (typeID > 0)
@@ -276,15 +277,22 @@ public class CharacterControl : MonoBehaviour
         transform.position = new Vector3(0, -100, 0);
         transform.localScale = size;
         healthBar.GetComponent<Canvas>().enabled = true;
+        GetComponent<BoxCollider2D>().enabled = true;
+        readyToSpawn = true;
     }
 
     IEnumerator FlashOnHit(float damage, int crit)
     {
         foreach (SpriteRenderer toFlash in GetComponentsInChildren<SpriteRenderer>())
         { 
+            if (!toFlash.gameObject.CompareTag("Player")) { continue; }
             float flash = 0.5f;
             toFlash.color = new Color(1, flash, flash);
-            yield return new WaitForSeconds(crit * 0.05f);
+        }
+        yield return new WaitForSeconds(crit * 0.05f);
+        foreach (SpriteRenderer toFlash in GetComponentsInChildren<SpriteRenderer>())
+        {
+            if (!toFlash.gameObject.CompareTag("Player")) { continue; }
             toFlash.color = Color.white;
         }
     }
@@ -327,10 +335,9 @@ public class CharacterControl : MonoBehaviour
         {
             activeEffects.Add(effect);
         }
-        else
-        {
-            TriggerEffect(effect);
-        }
+
+        TriggerEffect(effect);
+
     }
 
     private void EffectTick()
@@ -348,7 +355,7 @@ public class CharacterControl : MonoBehaviour
                 }
             }
         }
-        activeEffects.RemoveAll(effect => effect.duration <= 0);
+        activeEffects.RemoveAll(effect => effect.duration < 0);
     }
 
     public float TriggerEffect(Ability effect)
@@ -375,6 +382,18 @@ public class CharacterControl : MonoBehaviour
                 {
                     evadeModifiers *= effect.multi;
                 }
+                if (effect.durationType.Equals("use"))
+                {
+                    effect.duration--;
+                }
+                if (effect.duration >= 0)
+                {
+                    GameObject.Find("ShieldEffect").GetComponent<SpriteRenderer>().enabled = true;
+                }
+                else
+                {
+                    GameObject.Find("ShieldEffect").GetComponent<SpriteRenderer>().enabled = false;
+                }
                 return evadeModifiers;
             case "damage":
                 if (effect.buffType.Equals("add") || effect.buffType.Equals("multi"))
@@ -389,6 +408,13 @@ public class CharacterControl : MonoBehaviour
                 if (effect.durationType.Equals("use"))
                 {
                     effect.duration--;
+                }
+                if (effect.duration >= 0)
+                {
+                    GameObject.Find("SwordEffect").GetComponent<SpriteRenderer>().enabled = true;
+                } else
+                {
+                    GameObject.Find("SwordEffect").GetComponent<SpriteRenderer>().enabled = false;
                 }
                 return damageModifiers;
             case "shield":
@@ -535,7 +561,6 @@ public class CharacterControl : MonoBehaviour
         }
         SetHealthBar("barHealth", 1, 0);
         SetHealthBar("barDamage", 1, 0);
-        SetHealthBar("barBackground", 1, 0);
     }
 
     private void SetHealthBar(string name, float newValue, float speed)
@@ -545,6 +570,12 @@ public class CharacterControl : MonoBehaviour
             if (bar.name.Equals(name) || name.Equals("all"))
             {
                 bar.GetComponent<HealthBarScript>().SetSize(newValue, speed);
+                if (name.Equals("barShield"))
+                {
+                    SpriteRenderer shieldBubble = GameObject.Find("ShieldBubble").GetComponent<SpriteRenderer>();
+                    shieldBubble.color = new Color(shieldBubble.color.r, shieldBubble.color.g, shieldBubble.color.b, (float)shieldHealth/(float)baseMaxHP);
+                }
+                break;
             }
         }
     }

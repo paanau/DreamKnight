@@ -61,7 +61,7 @@ public class LevelController : MonoBehaviour
             // if (Vector3.Distance(enemy.transform.position, player.transform.position) < 30) enemy.GetComponent<SpriteRenderer>().enabled = true;
 
             // -20 is to check when the enemy has gone far enough behind the player/camera
-            if(enemy.transform.position.y < -20)
+            if(enemy.transform.position.y < -20 && enemy.GetComponent<CharacterControl>().readyToSpawn)
             {
                 Debug.Log("I am down!");
                 // move to the end
