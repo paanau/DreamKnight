@@ -180,7 +180,7 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 5710676968581302946}
   m_Bounds:
-    m_Center: {x: 0.0000019073486, y: 0.0042829514, z: 0}
+    m_Center: {x: 0.0000019073486, y: 0.0042824745, z: 0}
     m_Extent: {x: 8.810001, y: 7.9357233, z: 0}
   m_UseBatching: 1
 --- !u!1 &740780675409420648
@@ -385,8 +385,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 7507123582527406458}
   m_Bounds:
-    m_Center: {x: -0.0000023841858, y: -0.0017926693, z: 0}
-    m_Extent: {x: 4.400002, y: 2.8529701, z: 0}
+    m_Center: {x: 0.4393592, y: -0.031187296, z: 0}
+    m_Extent: {x: 4.2945333, y: 3.008812, z: 0}
   m_UseBatching: 1
 --- !u!1 &1893517205208411152
 GameObject:
@@ -624,7 +624,7 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 5710676968581302946}
   m_Bounds:
-    m_Center: {x: 0.0000019073486, y: 0.0042829514, z: 0}
+    m_Center: {x: 0.0000019073486, y: 0.0042824745, z: 0}
     m_Extent: {x: 8.810001, y: 7.9357233, z: 0}
   m_UseBatching: 1
 --- !u!1 &2538710731300467826
@@ -856,6 +856,7 @@ MonoBehaviour:
   baseDamage: 0
   shieldHealth: 0
   isPlayer: 1
+  readyToSpawn: 0
   projectilePrefab: {fileID: 1589657863535395054, guid: 490513923fec4f74a9540cc1f96fd5e9,
     type: 3}
   effectCircle: {fileID: 0}
@@ -1021,8 +1022,8 @@ MonoBehaviour:
   - {fileID: 2409380041804327019}
   - {fileID: 4804680109254892943}
   m_Bounds:
-    m_Center: {x: -0.000069856644, y: 0.010027885, z: 0}
-    m_Extent: {x: 3.52993, y: 2.2999701, z: 0}
+    m_Center: {x: 0.04296398, y: 0.05147004, z: 0}
+    m_Extent: {x: 3.5776606, y: 2.3887463, z: 0}
   m_UseBatching: 1
 --- !u!1 &3131066207256752801
 GameObject:
@@ -1169,7 +1170,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5212845066060684093}
-  m_LocalRotation: {x: 0, y: 0, z: -0.0016737442, w: 0.9999986}
+  m_LocalRotation: {x: -0, y: -0, z: -0.016329028, w: 0.9998667}
   m_LocalPosition: {x: 2.9845076, y: -0.0000010842423, z: 0}
   m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1}
   m_Children:
@@ -1178,7 +1179,7 @@ Transform:
   - {fileID: 2605647439895903227}
   m_Father: {fileID: 2409380041804327019}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -1.871}
 --- !u!1 &5547643109218666300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1278,8 +1279,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 4428602541575130936}
   m_Bounds:
-    m_Center: {x: -0.0024273396, y: 0.0014171004, z: 0}
-    m_Extent: {x: 1.3875704, y: 0.8485609, z: 0}
+    m_Center: {x: 0.14620614, y: 0.08539456, z: 0}
+    m_Extent: {x: 1.3897989, y: 0.86839634, z: 0}
   m_UseBatching: 1
 --- !u!1 &5806661489009509376
 GameObject:
@@ -1410,8 +1411,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 2605647439895903227}
   m_Bounds:
-    m_Center: {x: 0.0000009536743, y: 0.00029879808, z: 0}
-    m_Extent: {x: 1.3900001, y: 0.88754046, z: 0}
+    m_Center: {x: 0.14852989, y: -0.0782544, z: 0}
+    m_Extent: {x: 1.3970228, y: 0.8811215, z: 0}
   m_UseBatching: 1
 --- !u!1 &7286325420392118294
 GameObject:
@@ -1557,7 +1558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4755064450955847809}
   - component: {fileID: 556509919341440703}
-  - component: {fileID: 1922680696708093828}
+  - component: {fileID: 3635292141169822442}
   m_Layer: 0
   m_Name: Head
   m_TagString: Player
@@ -1630,7 +1631,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1922680696708093828
+--- !u!114 &3635292141169822442
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1645,11 +1646,13 @@ MonoBehaviour:
   m_RootBone: {fileID: 2409380041804327019}
   m_BoneTransforms:
   - {fileID: 2409380041804327019}
+  - {fileID: 4428602541575130936}
   - {fileID: 3983820810041448012}
+  - {fileID: 2605647439895903227}
   - {fileID: 7507123582527406458}
   m_Bounds:
-    m_Center: {x: 0.0017113686, y: 0.008592129, z: 0}
-    m_Extent: {x: 4.9143515, y: 5.5075707, z: 0}
+    m_Center: {x: 0.060921192, y: -0.00026273727, z: 0}
+    m_Extent: {x: 4.9146557, y: 5.512187, z: 0}
   m_UseBatching: 1
 --- !u!1001 &3758484450858206287
 PrefabInstance:

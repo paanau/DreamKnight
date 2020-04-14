@@ -1412,6 +1412,7 @@ MonoBehaviour:
   baseDamage: 0
   shieldHealth: 0
   isPlayer: 1
+  readyToSpawn: 0
   projectilePrefab: {fileID: 1589657863535395054, guid: 490513923fec4f74a9540cc1f96fd5e9,
     type: 3}
   effectCircle: {fileID: 0}
