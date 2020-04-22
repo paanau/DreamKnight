@@ -404,7 +404,7 @@ MonoBehaviour:
   playerCharacter: {fileID: 1482242892}
   mainCamera: {fileID: 519420028}
   pauseSelectionUI: {fileID: 1973560129}
-  enemyPrefab: {fileID: 4749821695297356604, guid: 10f6a209fc72c124a920fc400f4bff20,
+  enemyPrefab: {fileID: 7699762867577334182, guid: a4dc9f42c402c944bbb1a7da37c21ddd,
     type: 3}
   experienceOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba,
     type: 3}
@@ -1334,6 +1334,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1888777946966672703, guid: b6b00520d9e6ebe4bb8a029ef5cb438b,
+        type: 3}
+      propertyPath: myAnimator
+      value: 
+      objectReference: {fileID: 1482242895}
     - target: {fileID: 2793740620463798753, guid: b6b00520d9e6ebe4bb8a029ef5cb438b,
         type: 3}
       propertyPath: m_Name
@@ -1374,6 +1379,12 @@ PrefabInstance:
 --- !u!1 &1482242892 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2793740620463798753, guid: b6b00520d9e6ebe4bb8a029ef5cb438b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1447016432}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1482242895 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2037597131809976756, guid: b6b00520d9e6ebe4bb8a029ef5cb438b,
     type: 3}
   m_PrefabInstance: {fileID: 1447016432}
   m_PrefabAsset: {fileID: 0}

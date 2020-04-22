@@ -3,20 +3,23 @@
 		"id": 0,
         "title": "Dream Knight",
         "baseDamage": 50,
-        "attackCoolDown": 0.6,
+        "attackCooldown": 3,
         "directionModifier": 1,
 		"hitchance": 50,
 		"evasion": 30,
-        "myTurn": true
+        "myTurn": true,
+		"prefab": "Character"
 
     },
     {
         "id": 1,
         "title": "Turmeric Tentacle",
+		"attackCooldown": 5,
 		"baseDamage": 15,
 		"hitchance": 10,
 		"evasion": 10,
-		"experience": 100
+		"experience": 100,
+		"prefab": "ESwabber"
     },
     {
         "id": 2,

@@ -8,7 +8,7 @@ public class CharacterControl : MonoBehaviour
     public Character character = null;
     private GameObject gameController;
     private CharacterControl meleeTarget;
-    private Animator myAnimator;
+    public Animator myAnimator;
     private GameController main;
     private ParticleSystem.Particle[] effectParticles;
     private List<Ability> myAbilities = new List<Ability>();
@@ -87,7 +87,7 @@ public class CharacterControl : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (myTurn && isAlive)
         {
@@ -150,39 +150,64 @@ public class CharacterControl : MonoBehaviour
 
     IEnumerator Mettle()
     {
+        float compensationTime = 0;
         while (isAlive && meleeTarget.IsAlive())
         {
-            float damage = DamageDealt();
-            //if (main.playerTurn) { damage *= rushDamageBoost; }
-            int critDegree = 1;
-            float toHit = GetHitChance();
-            float evade = meleeTarget.GetEvasion();
-            float roll = Random.Range(0, 100);
-            if (toHit + roll >= evade) // 50 + 90 >= 10
+            if (myAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals(character.prefab + "_Hurt"))
             {
-                for (int i = 1; i < 5; i++)
+                compensationTime += Time.deltaTime;
+                yield return null;
+            }
+
+            myAnimator.SetTrigger("Attack");
+            //meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
+
+            float adjustedTime = attackCooldown - compensationTime;
+            compensationTime = 0;
+            yield return new WaitForSeconds(adjustedTime);
+        }
+    }
+
+    private void Strike()
+    {
+        float damage = DamageDealt();
+        //if (main.playerTurn) { damage *= rushDamageBoost; }
+        int critDegree = 1;
+        float toHit = GetHitChance();
+        float evade = meleeTarget.GetEvasion();
+        float roll = Random.Range(0, 100);
+        
+        if (toHit + roll >= evade) // 50 + 90 >= 10
+        {
+            for (int i = 1; i < 5; i++)
+            {
+                if (toHit + roll >= i * 100) // 140 >= 0, 100
                 {
-                    if (toHit + roll >= i * 100) // 140 >= 0, 100
-                    {
-                        critDegree *= 2;
-                    }
+                    critDegree *= 2;
                 }
-                damage *= critDegree;
-                if (!meleeTarget.DamageTaken(damage, critDegree)) // Hit
-                {
-                    main.EndCombat(meleeTarget);
-                    meleeTarget.EndCombat();
-                    EndCombat();
-                }
+            }
+            damage *= critDegree;
+            if (!meleeTarget.DamageTaken(damage, critDegree)) // Hit
+            {
+                main.EndCombat(meleeTarget);
+                meleeTarget.EndCombat();
+                EndCombat();
             }
             else
             {
-                damage = 0;
-                // Miss
+                meleeTarget.myAnimator.SetTrigger("GetHit");
             }
-            //meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
-            yield return new WaitForSeconds(attackCooldown);
         }
+        else
+        {
+            damage = 0;
+            // Miss
+        }
+    }
+
+    private void SetAnimationToIdle()
+    {
+        myAnimator.SetTrigger("Stop");
     }
 
     public bool DamageTaken(float damage, int crit)
@@ -228,10 +253,10 @@ public class CharacterControl : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
         if (hit.collider != null && hit.collider.gameObject != gameObject)
         {
-            Debug.Log(hit.collider.gameObject.name);
+            Debug.Log(hit.collider.gameObject.name + " " + myAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
             if (gameObject.tag == "Enemy" && hit.collider.gameObject.tag == "Enemy")
             {
-                waiting = true;
+                waiting = true;   
             }
             else
             {
@@ -241,8 +266,12 @@ public class CharacterControl : MonoBehaviour
                 meleeTarget.MeleeCombat(gameObject);
                 main.InitiateCombat(gameObject, hit.collider.gameObject);
                 //myAnimator.SetTrigger("enterCombat");
-                myAnimator.speed = 1f / attackCooldown;
+                //myAnimator.speed = 1f / attackCooldown;
             }
+        }
+        else
+        {
+            myAnimator.SetTrigger("Move");
         }
     }
 
@@ -253,6 +282,7 @@ public class CharacterControl : MonoBehaviour
 
     private void Death()
     {
+        meleeTarget.myAnimator.SetTrigger("Die");
         if (character.id != 0) StartCoroutine(BurstIntoTreats());
         else main.GameOver();
         if (isAlive)
@@ -267,6 +297,7 @@ public class CharacterControl : MonoBehaviour
 
     IEnumerator BurstIntoTreats()
     {
+        yield return new WaitForSeconds(2);
         healthBar.GetComponent<Canvas>().enabled = false;
         Vector3 size = transform.localScale;
         for (int i = 0; i < 10; i++)
@@ -285,14 +316,14 @@ public class CharacterControl : MonoBehaviour
     {
         foreach (SpriteRenderer toFlash in GetComponentsInChildren<SpriteRenderer>())
         { 
-            if (!toFlash.gameObject.CompareTag("Player")) { continue; }
+            if (!toFlash.gameObject.CompareTag(gameObject.tag)) { continue; }
             float flash = 0.5f;
             toFlash.color = new Color(1, flash, flash);
         }
         yield return new WaitForSeconds(crit * 0.05f);
         foreach (SpriteRenderer toFlash in GetComponentsInChildren<SpriteRenderer>())
         {
-            if (!toFlash.gameObject.CompareTag("Player")) { continue; }
+            if (!toFlash.gameObject.CompareTag(gameObject.tag)) { continue; }
             toFlash.color = Color.white;
         }
     }
@@ -311,7 +342,8 @@ public class CharacterControl : MonoBehaviour
         inCombat = false;
         StopCoroutine(Mettle());
 
-        //myAnimator.SetTrigger("leaveCombat");
+        if (myTurn) { myAnimator.SetTrigger("Move"); }
+        else { myAnimator.SetTrigger("Stop"); }
     }
 
     public float GetCooldown()
@@ -368,9 +400,9 @@ public class CharacterControl : MonoBehaviour
                 {
                     if (effect.strength >= 0) { currentHP += effect.strength; } else { DamageTaken(-effect.strength, 1); }
                 }
+                if (currentHP > baseMaxHP) { currentHP = baseMaxHP; }
                 SetHealthBar("barHealth", currentHP / baseMaxHP, 5);
                 SetHealthBar("barDamage", currentHP / baseMaxHP, 1f);
-                Debug.Log(gameObject.name + " got " + effect.strength + " HP!");
                 return 0;
             case "evasion":
                 if (effect.buffType.Equals("add") || effect.buffType.Equals("multi"))
@@ -472,8 +504,7 @@ public class CharacterControl : MonoBehaviour
 
     public void AdvanceMe()
     {
-        //myAnimator.SetTrigger("move");
-        transform.Translate(0.1f * (speedModifiers * baseSpeed * directionModifier + baseSpeed), 0, 0);
+        transform.Translate((speedModifiers * baseSpeed * directionModifier + baseSpeed) * Time.deltaTime, 0, 0);
         myAnimator.speed = speedModifiers * baseSpeed + 1;
     }
 
@@ -502,7 +533,7 @@ public class CharacterControl : MonoBehaviour
 
     public void SetAnimationSpeed(float newSpeed)
     {
-        myAnimator.speed = newSpeed * speedModifiers;
+        //myAnimator.speed = newSpeed * speedModifiers;
         gameRunSpeed = newSpeed * speedModifiers;
         //ParticleSystem myBloodLoss = GetComponent<ParticleSystem>();
         //var main = myBloodLoss.main;

@@ -30,6 +30,7 @@ public class Character
     public int directionModifier    { get; set; }
     public int experience           { get; set; }
     public int resistance           { get; set; }
+    public string prefab            { get; set; }
 
 
     public Character()

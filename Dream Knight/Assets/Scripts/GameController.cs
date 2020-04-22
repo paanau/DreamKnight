@@ -10,7 +10,7 @@ using LitJson;
 public class GameController : MonoBehaviour
 {
     [SerializeField] private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
-    private bool chargeButton, slowdownActive;
+    private bool chargeButton, slowdownActive, pauseActive;
     public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
     [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab, experienceOrbs;
@@ -31,8 +31,16 @@ public class GameController : MonoBehaviour
 
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
-            // Populate list of enemies. TODO autogeneration of enemies
+            try
+            {
+                enemy.GetComponent<CharacterControl>().SetGameController(gameObject);
+                // Populate list of enemies. TODO autogeneration of enemies
+                
+            }
+            catch
+            {
+                continue;
+            }
             enemies.Add(enemy);
         }
        
@@ -74,12 +82,16 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameActive && playerCharacter.transform.position.x >= mainCamera.transform.position.x - 3)
+        {
+            mainCamera.transform.position = new Vector3(playerCharacter.transform.position.x + 3, 2.5f, -10);
+        }
+    }
+
+    void FixedUpdate()
+    {
         if (gameActive)
         {
-            if (playerCharacter.transform.position.x >= mainCamera.transform.position.x - 3)
-            {
-                mainCamera.transform.position = new Vector3(playerCharacter.transform.position.x + 3, 2.5f, -10);
-            }
             if (playerTurn)
             {
                 if (!chargeActive)
@@ -241,7 +253,7 @@ public class GameController : MonoBehaviour
                     }
                     else
                     {
-                        //PauseForAbility();
+                        PauseForAbility();
                     }
                     touchDelta = Vector2.zero;
                 }
@@ -422,7 +434,7 @@ public class GameController : MonoBehaviour
         else
         {
             Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(Touchscreen.current.primaryTouch.position.ReadValue());
-            Debug.Log(ray);
+            //Debug.Log(ray);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("PauseUI"));
             if (hit.collider != null)
             {
@@ -506,17 +518,17 @@ public class GameController : MonoBehaviour
 
     private void ChangeSpeeds()
     {
-        if (slowdownActive)
+        if (pauseActive)
+        {
+            gameRunSpeed = 0f;   
+        }
+        else if (slowdownActive)
         {
             gameRunSpeed = 0.05f;
         }
         else
         {
             gameRunSpeed = 1;
-        }
-        if (playerTurn && !firstTurn && !chargeActive)
-        {
-            gameRunSpeed = 0;
         }
         ActivateEnemies();
         ActivateProjectiles();
@@ -527,6 +539,7 @@ public class GameController : MonoBehaviour
         }
         playerController.SetMyTurn(playerTurn);
         playerController.SetAnimationSpeed(gameRunSpeed);
+        Time.timeScale = gameRunSpeed;
     }
 
     private void TogglePauseSelectionUI(bool newState)

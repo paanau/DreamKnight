@@ -75,7 +75,7 @@ public class EnergyBar : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         currentPlayerEnergy = gameController.chargeEnergy;
         currentEnemyEnergy = gameController.enemyEnergy;

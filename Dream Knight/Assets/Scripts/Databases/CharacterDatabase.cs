@@ -119,6 +119,11 @@ public class CharacterDatabase : MonoBehaviour {
                 newCharacter.resistance = (int)characterData[i]["resistance"];
             }
             catch { };
+            try
+            {
+                newCharacter.prefab = (string)characterData[i]["prefab"];
+            }
+            catch { };
             database.Add(newCharacter);
 		}
 	}
