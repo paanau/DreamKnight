@@ -168,6 +168,7 @@ public class GameController : MonoBehaviour
             if (ec.IsAlive() && ec.IsNotInCombat())
             {
                 ec.StopWaiting();
+                ec.SetAnimationTrigger("Move");
             }
         }
     }
@@ -184,6 +185,7 @@ public class GameController : MonoBehaviour
         enemyEnergy = 0;
         playerTurn = true;
         ChangeTurns();
+        playerController.SetAnimationTrigger("Move");
     }
     
     private void EndPlayerTurn()
@@ -192,6 +194,7 @@ public class GameController : MonoBehaviour
         playerTurn = false;
         chargeActive = false;
         ChangeTurns();
+        playerController.SetAnimationTrigger("Stop");
     }
 
     private void ChangeTurns()
@@ -408,6 +411,7 @@ public class GameController : MonoBehaviour
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             if (ec.CanAdvance())
             {
+                ec.SetAnimationTrigger("Move");
                 ec.AdvanceModifiers(gameRunSpeed);
             }
             if (ec.CanFight())
@@ -545,5 +549,10 @@ public class GameController : MonoBehaviour
     private void TogglePauseSelectionUI(bool newState)
     {
         pauseSelectionUI.GetComponent<Canvas>().enabled = newState;
+    }
+
+    public void TogglePauseMenu(bool pause)
+    {
+        gameActive = !pause;
     }
 }

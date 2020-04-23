@@ -89,16 +89,10 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (myTurn && isAlive)
+        if (myTurn && isAlive && !inCombat && !waiting)
         {
-            if (!inCombat)
-            {
-                if (!waiting)
-                {
-                    AdvanceMe();
-                    ScanForTarget();
-                }
-            }
+            AdvanceMe();
+            ScanForTarget();
         }
         EffectTick();
     }
@@ -146,6 +140,7 @@ public class CharacterControl : MonoBehaviour
     {
         meleeTarget = target.GetComponent<CharacterControl>();
         StartCoroutine(Mettle());
+        SetAnimationTrigger("Attack");
     }
 
     IEnumerator Mettle()
@@ -159,12 +154,12 @@ public class CharacterControl : MonoBehaviour
                 yield return null;
             }
 
-            myAnimator.SetTrigger("Attack");
             //meleeTarget.TriggerBloodEffect(Mathf.FloorToInt(damage), gameRunSpeed);
 
             float adjustedTime = attackCooldown - compensationTime;
             compensationTime = 0;
             yield return new WaitForSeconds(adjustedTime);
+            SetAnimationTrigger("Attack");
         }
     }
 
@@ -195,7 +190,7 @@ public class CharacterControl : MonoBehaviour
             }
             else
             {
-                meleeTarget.myAnimator.SetTrigger("GetHit");
+                meleeTarget.SetAnimationTrigger("GetHit");
             }
         }
         else
@@ -205,9 +200,9 @@ public class CharacterControl : MonoBehaviour
         }
     }
 
-    private void SetAnimationToIdle()
+    public void SetAnimationTrigger(string newState)
     {
-        myAnimator.SetTrigger("Stop");
+        myAnimator.SetTrigger(newState);
     }
 
     public bool DamageTaken(float damage, int crit)
@@ -271,7 +266,7 @@ public class CharacterControl : MonoBehaviour
         }
         else
         {
-            myAnimator.SetTrigger("Move");
+            
         }
     }
 
@@ -282,7 +277,7 @@ public class CharacterControl : MonoBehaviour
 
     private void Death()
     {
-        meleeTarget.myAnimator.SetTrigger("Die");
+        meleeTarget.SetAnimationTrigger("Die");
         if (character.id != 0) StartCoroutine(BurstIntoTreats());
         else main.GameOver();
         if (isAlive)
@@ -342,8 +337,8 @@ public class CharacterControl : MonoBehaviour
         inCombat = false;
         StopCoroutine(Mettle());
 
-        if (myTurn) { myAnimator.SetTrigger("Move"); }
-        else { myAnimator.SetTrigger("Stop"); }
+        if (myTurn) { SetAnimationTrigger("Move"); }
+        else { SetAnimationTrigger("Stop"); }
     }
 
     public float GetCooldown()
@@ -499,7 +494,7 @@ public class CharacterControl : MonoBehaviour
     public void SetMyTurn(bool value)
     {
         myTurn = value;
-        //myAnimator.SetTrigger("idle");
+        //SetAnimationTrigger("idle");
     }
 
     public void AdvanceMe()
