@@ -1225,7 +1225,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.16, y: 18.08}
+  m_Size: {x: 7.42, y: 18.08}
   m_EdgeRadius: 0
 --- !u!95 &2199456570909910917
 Animator:
@@ -1275,6 +1275,7 @@ MonoBehaviour:
   isAlive: 0
   waiting: 0
   myTurn: 0
+  gameActive: 0
   currentHP: 0
   baseMaxHP: 0
   baseDamage: 0

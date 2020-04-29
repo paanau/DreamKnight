@@ -94,10 +94,17 @@ public class CharacterControl : MonoBehaviour
         {
             if (myTurn && isAlive && !inCombat && !waiting)
             {
-                AdvanceMe();
                 ScanForTarget();
             }
             EffectTick();
+        }
+    }
+
+    private void Update()
+    {
+        if (myTurn && isAlive && !inCombat && !waiting)
+        {
+            AdvanceMe();
         }
     }
 
@@ -503,7 +510,7 @@ public class CharacterControl : MonoBehaviour
 
     public void AdvanceMe()
     {
-        transform.Translate((speedModifiers * baseSpeed * directionModifier + baseSpeed) * Time.deltaTime, 0, 0);
+        transform.Translate((speedModifiers * (baseSpeed + 1) * directionModifier) * Time.deltaTime, 0, 0);
         myAnimator.speed = speedModifiers * baseSpeed + 1;
     }
 
