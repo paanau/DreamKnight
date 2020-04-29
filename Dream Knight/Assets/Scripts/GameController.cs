@@ -76,7 +76,7 @@ public class GameController : MonoBehaviour
         enemyDepleteRate = 20;
         gameRunSpeed = 1f;
 
-        
+        ChangeSpeeds();
     }
 
     // Update is called once per frame
@@ -242,12 +242,19 @@ public class GameController : MonoBehaviour
                 //Debug.Log(ctx.currentTouch.screenPosition);
                 //Debug.Log(ray.origin + " going to " + ray.direction);
                 RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("UI"));
-                if (hit.collider != null && hit.collider.gameObject.tag.Equals("Menu"))
+                if (hit.collider != null)
                 {
-                    if (hit.collider.gameObject.TryGetComponent(out ButtonScript bs))
+                    if (hit.collider.gameObject.tag.Equals("PauseUI"))
                     {
-                        bs.PressMe();
-                        Debug.Log(hit.collider.gameObject.name);
+
+                    }
+                    else if (hit.collider.gameObject.tag.Equals("Menu"))
+                    {
+                        if (hit.collider.gameObject.TryGetComponent(out ButtonScript bs))
+                        {
+                            bs.PressMe();
+                            Debug.Log(hit.collider.gameObject.name);
+                        }
                     }
                 }
                 else
@@ -289,13 +296,6 @@ public class GameController : MonoBehaviour
         if (gameActive)
         {
             PressAction();
-        }
-        else
-        {
-            Touch.onFingerUp += ctx =>
-            {
-
-            };
         }
     }
 
@@ -521,11 +521,11 @@ public class GameController : MonoBehaviour
         else
         {
             Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(Touchscreen.current.primaryTouch.position.ReadValue());
-            //Debug.Log(ray);
+
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("PauseUI"));
             if (hit.collider != null)
             {
-                string s = hit.collider.gameObject.name; //.Substring(15);
+                string s = hit.collider.gameObject.name.Substring(15);
                 Debug.Log(s);
                 UseAbility(s);
             }
@@ -633,12 +633,14 @@ public class GameController : MonoBehaviour
 
     private void TogglePauseSelectionUI(bool newState)
     {
-        pauseSelectionUI.GetComponent<Canvas>().enabled = newState;
+        pauseSelectionUI.SetActive(newState);
     }
 
-    public void TogglePause()
+    public void TogglePause(bool b)
     {
-        gameActive = !gameActive;
+        menuScreen.SetActive(b);
+
+        gameActive = !b;
         ChangeSpeeds();
         if (!gameActive)
         {

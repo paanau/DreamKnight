@@ -153,8 +153,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131503897}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.03, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.05, z: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.2, z: 1}
   m_Children: []
   m_Father: {fileID: 1376061931}
   m_RootOrder: 0
@@ -211,7 +211,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 102
-  m_Sprite: {fileID: 21300000, guid: c66348279eaa7d24698f7c6a4d1d93f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 819cee9fbdd88cf4ea682ab2ee14effd, type: 3}
   m_Color: {r: 0.31523487, g: 1, b: 0.21226418, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 198031529}
   m_Layer: 11
   m_Name: AbilityQuadrantLeft
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -332,7 +332,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 100, y: 100}
   m_EdgeRadius: 0
 --- !u!1001 &275653314
 PrefabInstance:
@@ -503,7 +503,7 @@ MonoBehaviour:
     type: 3}
   experienceOrbs: {fileID: 8113697442726907543, guid: bc50b0a982ac1054d9d6135c91fca9ba,
     type: 3}
-  menuScreen: {fileID: 0}
+  menuScreen: {fileID: 1855901615}
   abilitiesJSON: {fileID: 4900000, guid: 7d94c8e7366a68443be3b17bcf78ac77, type: 3}
   charactersJSON: {fileID: 4900000, guid: 8f6f7bef1482a2b4fa70ef6b87fecdb9, type: 3}
   itemsJSON: {fileID: 4900000, guid: a5310d1c213d7a6489b536da0befc2e7, type: 3}
@@ -1258,7 +1258,7 @@ GameObject:
   - component: {fileID: 931401488}
   m_Layer: 11
   m_Name: AbilityIconUp
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1512,7 +1512,7 @@ Transform:
   m_GameObject: {fileID: 1376061930}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 2, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.5, z: 1}
   m_Children:
   - {fileID: 131503898}
   - {fileID: 2087569780}
@@ -1558,7 +1558,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 101
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 819cee9fbdd88cf4ea682ab2ee14effd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1839,7 +1839,7 @@ GameObject:
   - component: {fileID: 1736565460}
   m_Layer: 11
   m_Name: AbilityQuadrantUp
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1924,7 +1924,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 100, y: 100}
   m_EdgeRadius: 0
 --- !u!114 &1736565460
 MonoBehaviour:
@@ -2054,7 +2054,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_Sprite: {fileID: 21300000, guid: c66348279eaa7d24698f7c6a4d1d93f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 819cee9fbdd88cf4ea682ab2ee14effd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.34117648}
   m_FlipX: 0
   m_FlipY: 0
@@ -2190,11 +2190,11 @@ GameObject:
   - component: {fileID: 1973560131}
   m_Layer: 11
   m_Name: PauseSelectionUI
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1973560130
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2230,11 +2230,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
+  m_IgnoreReversedGraphics: 0
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 4294967295
 --- !u!114 &1973560132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2264,7 +2264,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973560129}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -2304,7 +2304,7 @@ GameObject:
   - component: {fileID: 2024718577}
   m_Layer: 11
   m_Name: AbilityQuadrantDown
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2388,7 +2388,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 100, y: 100}
   m_EdgeRadius: 0
 --- !u!1 &2038081046 stripped
 GameObject:
@@ -2422,8 +2422,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2087569779}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.01, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.05, z: 1}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.2, z: 1}
   m_Children: []
   m_Father: {fileID: 1376061931}
   m_RootOrder: 1
@@ -2480,7 +2480,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 102
-  m_Sprite: {fileID: 21300000, guid: c66348279eaa7d24698f7c6a4d1d93f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 819cee9fbdd88cf4ea682ab2ee14effd, type: 3}
   m_Color: {r: 1, g: 0.22008108, b: 0.2117647, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2511,7 +2511,7 @@ GameObject:
   - component: {fileID: 2132380171}
   m_Layer: 11
   m_Name: AbilityQuadrantRight
-  m_TagString: Untagged
+  m_TagString: PauseUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2595,7 +2595,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 100, y: 100}
   m_EdgeRadius: 0
 --- !u!1 &2142014783 stripped
 GameObject:

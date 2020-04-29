@@ -40,6 +40,7 @@ public class ButtonScript : MonoBehaviour
                 TogglePause(false);
                 break;
             case "Play":
+                TogglePause(true);
                 break;
             case "Settings":
                 break;
@@ -50,8 +51,7 @@ public class ButtonScript : MonoBehaviour
 
     private void TogglePause(bool b)
     {
-        gc.TogglePause();
-        menuBackground.SetActive(b);
+        gc.TogglePause(b);
         Debug.Log(b);
     }
 }
