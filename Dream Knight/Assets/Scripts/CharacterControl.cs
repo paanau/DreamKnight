@@ -14,7 +14,7 @@ public class CharacterControl : MonoBehaviour
     private List<Ability> myAbilities = new List<Ability>();
     [SerializeField] private List<Ability> activeEffects = new List<Ability>();
     [SerializeField] private float range, attackCooldown, gameRunSpeed, baseSpeed, speedModifiers, damageModifiers, evadeModifiers, hitchance, evasion, resistance, regen;
-    [SerializeField] private bool inCombat, isAlive, waiting, myTurn;
+    [SerializeField] private bool inCombat, isAlive, waiting, myTurn, gameActive;
     [SerializeField] private float currentHP, baseMaxHP, baseDamage, shieldHealth;
     [SerializeField] private bool isPlayer;
     public bool readyToSpawn;
@@ -22,6 +22,7 @@ public class CharacterControl : MonoBehaviour
     private string title;
     private GameObject[] healthbarComponents;
     [SerializeField] private int directionModifier, experience;
+    private Coroutine mettle;
 
     // Start is called before the first frame update
     void Start()
@@ -89,12 +90,15 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (myTurn && isAlive && !inCombat && !waiting)
+        if (gameActive)
         {
-            AdvanceMe();
-            ScanForTarget();
+            if (myTurn && isAlive && !inCombat && !waiting)
+            {
+                AdvanceMe();
+                ScanForTarget();
+            }
+            EffectTick();
         }
-        EffectTick();
     }
 
     public void SetGameController(GameObject go)
@@ -139,7 +143,7 @@ public class CharacterControl : MonoBehaviour
     public void MeleeCombat(GameObject target)
     {
         meleeTarget = target.GetComponent<CharacterControl>();
-        StartCoroutine(Mettle());
+        mettle = StartCoroutine(Mettle());
         SetAnimationTrigger("Attack");
     }
 
@@ -159,7 +163,7 @@ public class CharacterControl : MonoBehaviour
             float adjustedTime = attackCooldown - compensationTime;
             compensationTime = 0;
             yield return new WaitForSeconds(adjustedTime);
-            SetAnimationTrigger("Attack");
+            if (isAlive) SetAnimationTrigger("Attack");
         }
     }
 
@@ -245,7 +249,7 @@ public class CharacterControl : MonoBehaviour
 
     private void ScanForTarget()
     {
-        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up);
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + (range * directionModifier), transform.position.y), -Vector2.up, 100, LayerMask.GetMask("Default"));
         if (hit.collider != null && hit.collider.gameObject != gameObject)
         {
             Debug.Log(hit.collider.gameObject.name + " " + myAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
@@ -277,7 +281,7 @@ public class CharacterControl : MonoBehaviour
 
     private void Death()
     {
-        meleeTarget.SetAnimationTrigger("Die");
+        SetAnimationTrigger("Die");
         if (character.id != 0) StartCoroutine(BurstIntoTreats());
         else main.GameOver();
         if (isAlive)
@@ -292,8 +296,9 @@ public class CharacterControl : MonoBehaviour
 
     IEnumerator BurstIntoTreats()
     {
-        yield return new WaitForSeconds(2);
-        healthBar.GetComponent<Canvas>().enabled = false;
+        healthBar.SetActive(false);
+        yield return new WaitForSeconds(5);
+        
         Vector3 size = transform.localScale;
         for (int i = 0; i < 10; i++)
         {
@@ -302,7 +307,7 @@ public class CharacterControl : MonoBehaviour
         }
         transform.position = new Vector3(0, -100, 0);
         transform.localScale = size;
-        healthBar.GetComponent<Canvas>().enabled = true;
+        healthBar.SetActive(true);
         GetComponent<BoxCollider2D>().enabled = true;
         readyToSpawn = true;
     }
@@ -335,10 +340,9 @@ public class CharacterControl : MonoBehaviour
     public void EndCombat()
     {
         inCombat = false;
-        StopCoroutine(Mettle());
+        StopCoroutine(mettle);
 
-        if (myTurn) { SetAnimationTrigger("Move"); }
-        else { SetAnimationTrigger("Stop"); }
+        if (isAlive && myTurn) { SetAnimationTrigger("Move"); }
     }
 
     public float GetCooldown()
@@ -604,5 +608,10 @@ public class CharacterControl : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void SetGameActive(bool b)
+    {
+        gameActive = b;
     }
 }

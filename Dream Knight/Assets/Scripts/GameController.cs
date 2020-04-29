@@ -10,10 +10,10 @@ using LitJson;
 public class GameController : MonoBehaviour
 {
     [SerializeField] private bool gameActive, playerTurn, chargeActive, poweringUp, inCombat, firstTurn;
-    private bool chargeButton, slowdownActive, pauseActive;
+    private bool chargeButton, slowdownActive, touchActive;
     public float chargeEnergy, maxEnergy, enemyEnergy, playerChargeRate, playerDepleteRate, enemyDepleteRate;
     [SerializeField] private float rushSpeedBoost, rushDamageBoost, playerAttackCooldown, targetAttackCooldown, gameRunSpeed;
-    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab, experienceOrbs;
+    [SerializeField] private GameObject playerCharacter, mainCamera, pauseSelectionUI, enemyPrefab, experienceOrbs, menuScreen;
     private CharacterControl playerController, currentMeleeTargetController;
     private GameObject currentMeleeTarget;
     private PlayerInput playerInput;
@@ -224,21 +224,44 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void ReportMe(GameObject go)
+    {
+        Debug.Log(go.transform.position);
+    }
+
     public void OnCharge()
     {
-        if (gameActive)
+
+        Touch.onFingerDown += ctx =>
         {
-            //Debug.Log(Touch.activeFingers.Count);
-            Touch.onFingerDown += ctx =>
+            if (ctx.currentTouch.isInProgress && !touchActive)
             {
-                if (ctx.currentTouch.isInProgress)
+                touchActive = true;
+                //Debug.Log(ctx);
+                Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(ctx.currentTouch.screenPosition);
+                //Debug.Log(ctx.currentTouch.screenPosition);
+                //Debug.Log(ray.origin + " going to " + ray.direction);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("UI"));
+                if (hit.collider != null && hit.collider.gameObject.tag.Equals("Menu"))
+                {
+                    if (hit.collider.gameObject.TryGetComponent(out ButtonScript bs))
+                    {
+                        bs.PressMe();
+                        Debug.Log(hit.collider.gameObject.name);
+                    }
+                }
+                else
                 {
                     chargeButton = true;
                     touchDelta = Vector2.zero;
                 }
-            };
-            Touch.onFingerUp += ctx =>
+            }
+        };
+        Touch.onFingerUp += ctx =>
+        {
+            if (touchActive)
             {
+
                 chargeButton = false;
                 if (ctx.currentTouch.isInProgress)
                 {
@@ -248,7 +271,7 @@ public class GameController : MonoBehaviour
                 //{
                 //    if (t.isInProgress) chargeButton = true;
                 //}
-                if (!chargeButton && chargeActive)
+                if (!chargeButton && chargeActive && gameActive)
                 {
                     if (touchDelta.magnitude >= swipeSensitivity)
                     {
@@ -260,12 +283,72 @@ public class GameController : MonoBehaviour
                     }
                     touchDelta = Vector2.zero;
                 }
-            };
+                touchActive = false;
+            }
+        };
+        if (gameActive)
+        {
+            PressAction();
         }
         else
         {
-            OnRestart();
+            Touch.onFingerUp += ctx =>
+            {
+
+            };
         }
+    }
+
+    private void PressAction()
+    {
+        
+        //Touch.onFingerDown += ctx =>
+        //{
+        //    if (ctx.currentTouch.isInProgress)
+        //    {
+        //        Debug.Log(ctx);
+        //        Ray ray = mainCamera.GetComponent<Camera>().ScreenPointToRay(ctx.currentTouch.screenPosition);
+        //        //Debug.Log(ctx.currentTouch.screenPosition);
+        //        //Debug.Log(ray.origin + " going to " + ray.direction);
+        //        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 100); //, LayerMask.GetMask("UI"));
+        //        if (hit.collider != null && hit.collider.gameObject.tag.Equals("Menu"))
+        //        {
+        //            if (hit.collider.gameObject.TryGetComponent(out ButtonScript bs))
+        //            {
+        //                bs.PressMe();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            chargeButton = true;
+        //            touchDelta = Vector2.zero;
+        //        }
+        //    }
+        //};
+        //Touch.onFingerUp += ctx =>
+        //{
+        //    chargeButton = false;
+        //    if (ctx.currentTouch.isInProgress)
+        //    {
+        //        chargeButton = true;
+        //    }
+        //    //foreach (Touch t in Touch.activeTouches)
+        //    //{
+        //    //    if (t.isInProgress) chargeButton = true;
+        //    //}
+        //    if (!chargeButton && chargeActive && gameActive)
+        //    {
+        //        if (touchDelta.magnitude >= swipeSensitivity)
+        //        {
+        //            CalculateDelta();
+        //        }
+        //        else
+        //        {
+        //            PauseForAbility();
+        //        }
+        //        touchDelta = Vector2.zero;
+        //    }
+        //};
     }
 
     public void OnRestart()
@@ -337,7 +420,7 @@ public class GameController : MonoBehaviour
         {
             dir = direction.Equals("Down") ? "Misc" : "Ranged";
         }
-        if (playerController.SelectAbility(dir).energyCost < chargeEnergy)
+        if (!dir.Equals("") && playerController.SelectAbility(dir).energyCost < chargeEnergy)
         {
             energyCost = playerController.UseAbility(dir);
             slowdownActive = false;
@@ -504,6 +587,7 @@ public class GameController : MonoBehaviour
         {
             CharacterControl ec = enemy.GetComponent<CharacterControl>();
             ec.SetAnimationSpeed(gameRunSpeed);
+            ec.SetGameActive(gameActive);
             if (ec.IsAlive())
             {
                 ec.SetMyTurn(!playerTurn);
@@ -522,7 +606,7 @@ public class GameController : MonoBehaviour
 
     private void ChangeSpeeds()
     {
-        if (pauseActive)
+        if (!gameActive)
         {
             gameRunSpeed = 0f;   
         }
@@ -543,6 +627,7 @@ public class GameController : MonoBehaviour
         }
         playerController.SetMyTurn(playerTurn);
         playerController.SetAnimationSpeed(gameRunSpeed);
+        playerController.SetGameActive(gameActive);
         Time.timeScale = gameRunSpeed;
     }
 
@@ -551,8 +636,17 @@ public class GameController : MonoBehaviour
         pauseSelectionUI.GetComponent<Canvas>().enabled = newState;
     }
 
-    public void TogglePauseMenu(bool pause)
+    public void TogglePause()
     {
-        gameActive = !pause;
+        gameActive = !gameActive;
+        ChangeSpeeds();
+        if (!gameActive)
+        {
+            Debug.Log("Paused!");
+        }
+        else
+        {
+            Debug.Log("Unpaused!");
+        }
     }
 }

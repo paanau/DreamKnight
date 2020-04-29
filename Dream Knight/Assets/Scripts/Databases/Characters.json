@@ -2,8 +2,8 @@
 	{
 		"id": 0,
         "title": "Dream Knight",
-        "baseDamage": 50,
-        "attackCooldown": 3,
+        "baseDamage": 500,
+        "attackCooldown": 1,
         "directionModifier": 1,
 		"hitchance": 50,
 		"evasion": 30,
